@@ -24,6 +24,12 @@ public:
     void start(uint32_t durationMinutes);
     
     /**
+     * @brief Set timer duration (without starting)
+     * @param durationMinutes Timer duration in minutes
+     */
+    void setDuration(uint32_t durationMinutes);
+    
+    /**
      * @brief Stop the timer
      */
     void stop();

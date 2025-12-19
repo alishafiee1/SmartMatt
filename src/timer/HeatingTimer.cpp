@@ -22,6 +22,27 @@ void HeatingTimer::start(uint32_t durationMin) {
                  durationMinutes, durationMinutes * 60);
 }
 
+void HeatingTimer::setDuration(uint32_t durationMin) {
+    if (!isValidDuration(durationMin)) {
+        Serial.printf("[HeatingTimer] ERROR: Invalid duration %u min (range: %d-%d min)\n",
+                     durationMin, TIMER_MIN_MIN, TIMER_MAX_MIN);
+        return;
+    }
+    
+    durationMinutes = durationMin;
+    
+    // If timer is running, restart with new duration
+    if (running) {
+        startTimeMillis = millis();
+        expired = false;
+        Serial.printf("[HeatingTimer] Timer duration updated and restarted - Duration: %u minutes\n",
+                     durationMinutes);
+    } else {
+        Serial.printf("[HeatingTimer] Timer duration set - Duration: %u minutes (not started)\n",
+                     durationMinutes);
+    }
+}
+
 void HeatingTimer::stop() {
     if (running) {
         running = false;

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RODI Smart Mattress</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>تشک هوشمند RODI</h1>
+            <div class="status-bar">
+                <div class="status-item">
+                    <span class="status-icon" id="heating-icon">🔥</span>
+                    <span id="heating-status">خاموش</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-icon" id="wifi-icon">📶</span>
+                    <span id="wifi-status">متصل</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Display -->
+        <section class="main-display">
+            <div class="display-card">
+                <h2>دمای اتاق</h2>
+                <div class="temp-display">
+                    <span class="temp-value" id="room-temp">--</span>
+                    <span class="temp-unit">°C</span>
+                </div>
+                <div class="humidity-display">
+                    <span>رطوبت: </span>
+                    <span id="room-humidity">--</span>
+                    <span>%</span>
+                </div>
+            </div>
+
+            <div class="display-card">
+                <h2>دمای تشک</h2>
+                <div class="temp-display">
+                    <span class="temp-value" id="mattress-temp">--</span>
+                    <span class="temp-unit">°C</span>
+                </div>
+                <div class="sensor-status">
+                    <span id="sensor-status-text">سنسور سالم</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Temperature Control -->
+        <section class="control-section">
+            <h2>تنظیم دما</h2>
+            <div class="control-group">
+                <button class="btn-control" id="temp-down">-</button>
+                <div class="value-display">
+                    <span class="value-large" id="setpoint">25</span>
+                    <span class="value-unit">°C</span>
+                </div>
+                <button class="btn-control" id="temp-up">+</button>
+            </div>
+            <div class="range-info">محدوده: 20-45°C</div>
+        </section>
+
+        <!-- Timer Control -->
+        <section class="control-section">
+            <h2>تایمر</h2>
+            <div class="control-group">
+                <button class="btn-control" id="timer-down">-</button>
+                <div class="value-display">
+                    <span class="value-large" id="timer-display">0:00:00</span>
+                </div>
+                <button class="btn-control" id="timer-up">+</button>
+            </div>
+            <div class="range-info">محدوده: 15 دقیقه - 8 ساعت</div>
+        </section>
+
+        <!-- Power Control -->
+        <section class="control-section">
+            <button class="btn-power" id="power-btn">
+                <span id="power-text">روشن کردن گرمایش</span>
+            </button>
+        </section>
+
+        <!-- WiFi Setup -->
+        <section class="control-section wifi-section">
+            <h2>تنظیمات WiFi</h2>
+            <div class="wifi-form">
+                <div class="form-group">
+                    <label for="wifi-ssid">نام شبکه (SSID):</label>
+                    <input type="text" id="wifi-ssid" placeholder="نام شبکه WiFi">
+                </div>
+                <div class="form-group">
+                    <label for="wifi-password">رمز عبور:</label>
+                    <input type="password" id="wifi-password" placeholder="رمز عبور شبکه">
+                </div>
+                <button class="btn-secondary" id="wifi-connect">اتصال به شبکه</button>
+            </div>
+            <div class="wifi-info">
+                <p>برای اتصال به شبکه خانگی، نام و رمز شبکه را وارد کنید.</p>
+            </div>
+        </section>
+
+        <!-- Error Display -->
+        <div class="error-message" id="error-message" style="display: none;">
+            <span id="error-text"></span>
+            <button class="btn-close" id="error-close">×</button>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>RODI Smart Mattress v3.0</p>
+            <p>Team RODI - 2025</p>
+        </footer>
+    </div>
+
+    <script src="/app.js"></script>
+</body>
+</html>
+

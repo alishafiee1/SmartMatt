@@ -55,7 +55,7 @@
 // Safety Configuration
 // ============================
 
-#define WATCHDOG_TIMEOUT_SEC     10     // Watchdog timeout in seconds
+#define WATCHDOG_TIMEOUT_SEC     20     // Watchdog timeout in seconds (increased for SPIFFS init)
 #define SAFE_BOOT_HEATING_STATE  false  // Heating OFF on boot
 
 // ============================
@@ -105,6 +105,40 @@
 // Boot Sequence Configuration
 #define BOOT_STAGE1_DURATION_MS  3000    // Rodiset.ir stage duration (ms)
 #define BOOT_STAGE2_DURATION_MS  3000    // RODI logo stage duration (ms)
+
+// ============================
+// WiFi Configuration (Phase 3)
+// ============================
+
+// SoftAP Configuration
+#define WIFI_AP_SSID_PREFIX      "RODI_"           // SoftAP SSID prefix (suffix = MAC last 4 digits)
+#define WIFI_AP_PASSWORD         "rodi1234"        // SoftAP password (min 8 chars for WPA2)
+#define WIFI_AP_CHANNEL          1                 // WiFi channel (1-13)
+#define WIFI_AP_MAX_CONNECTIONS  4                 // Maximum concurrent connections
+#define WIFI_AP_HIDDEN           false             // Broadcast SSID
+#define WIFI_AP_IP               "192.168.4.1"     // SoftAP IP address
+#define WIFI_AP_GATEWAY          "192.168.4.1"     // SoftAP gateway
+#define WIFI_AP_SUBNET           "255.255.255.0"   // SoftAP subnet mask
+
+// Station Mode Configuration
+#define WIFI_STA_CONNECT_TIMEOUT_MS  30000         // Station connection timeout (30 seconds)
+#define WIFI_STA_MAX_RETRIES         3             // Maximum connection retry attempts
+#define WIFI_STA_RETRY_DELAY_MS      5000          // Delay between retries (5 seconds)
+
+// WiFi Settings Storage Keys
+#define SETTINGS_KEY_WIFI_SSID       "wifi_ssid"   // WiFi SSID key in NVS
+#define SETTINGS_KEY_WIFI_PASS       "wifi_pass"   // WiFi password key in NVS
+#define SETTINGS_KEY_SOFTAP_ENABLED  "softap_en"   // SoftAP enabled state key
+
+// ============================
+// Web Server Configuration (Phase 3)
+// ============================
+
+#define HTTP_SERVER_PORT         80                // HTTP server port
+#define HTTP_MAX_URI_HANDLERS    20                // Maximum URI handlers
+#define HTTP_STACK_SIZE          8192              // HTTP server stack size
+#define WEBSOCKET_MAX_CLIENTS    4                 // Maximum WebSocket connections
+#define WEBSOCKET_PING_INTERVAL_MS  30000          // WebSocket ping interval (30 seconds)
 
 // ============================
 // System Configuration

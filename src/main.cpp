@@ -1,5 +1,5 @@
 /**
- * RODI Smart Mattress - Phase 2: Device Panel Interface
+ * RODI Smart Mattress - Phase 3: WiFi Network and Web Panel
  * 
  * Feature-based architecture implementing:
  * Phase 1:
@@ -15,6 +15,13 @@
  * - Boot sequence with branding
  * - Status icons (heating, WiFi)
  * - Display animations on value changes
+ * 
+ * Phase 3:
+ * - WiFi connectivity (SoftAP + Station modes)
+ * - HTTP web server for control panel
+ * - WebSocket for real-time data streaming
+ * - REST API for device control
+ * - Responsive web panel UI
  * 
  * Hardware: ESP32
  * Framework: Arduino (ESP-IDF)
@@ -39,6 +46,10 @@
 #include "buttons/ButtonManager.h"
 #include "display/DisplayManager.h"
 
+// Phase 3 Components
+#include "network/WiFiManager.h"
+#include "server/WebServer.h"
+
 // ============================
 // Global Objects
 // ============================
@@ -54,6 +65,10 @@ SafetyMonitor safetyMonitor;
 // Phase 2 Components
 DisplayManager displayManager;
 ButtonManager* buttonManager = nullptr;  // Initialized after Phase 1 components
+
+// Phase 3 Components
+WiFiManager wifiManager;
+RodiWebServer* webServer = nullptr;  // Initialized after Phase 1 & 2 components
 
 // ============================
 // Timing Variables
@@ -124,6 +139,53 @@ void setup() {
     buttonManager = new ButtonManager(heatingController, heatingTimer, settings);
     buttonManager->begin();
     
+    // ===== PHASE 3 INITIALIZATION =====
+    
+    // Initialize WiFi Manager
+    Serial.println("\n=== Initializing WiFi Manager ===");
+    safetyMonitor.feedWatchdog();  // Feed watchdog before WiFi init
+    if (wifiManager.begin()) {
+        Serial.println("✓ WiFi Manager initialized");
+        Serial.printf("  - SoftAP SSID: %s\n", wifiManager.getSoftAPSSID().c_str());
+        if (wifiManager.isSoftAPEnabled()) {
+            Serial.printf("  - SoftAP IP: %s\n", wifiManager.getSoftAPIP().c_str());
+        }
+        if (wifiManager.isStationConnected()) {
+            Serial.printf("  - Station IP: %s\n", wifiManager.getStationIP().c_str());
+        }
+    } else {
+        Serial.println("⚠ WiFi Manager initialization failed");
+    }
+    safetyMonitor.feedWatchdog();  // Feed watchdog after WiFi init
+    
+    // Initialize Web Server (requires Phase 1 & 2 components)
+    Serial.println("\n=== Initializing Web Server ===");
+    Serial.println("Note: SPIFFS initialization may take 10-15 seconds...");
+    
+    webServer = new RodiWebServer(
+        heatingController,
+        heatingTimer,
+        settings,
+        roomSensor,
+        mattressSensor
+    );
+    
+    // Feed watchdog before potentially long SPIFFS operation
+    safetyMonitor.feedWatchdog();
+    Serial.println("Watchdog fed before web server initialization");
+    
+    if (webServer->begin()) {
+        Serial.println("✓ Web Server started");
+        Serial.println("  - HTTP server: http://192.168.4.1");
+        Serial.println("  - WebSocket server: ws://192.168.4.1:81");
+    } else {
+        Serial.println("⚠ Web Server initialization failed");
+    }
+    
+    // Feed watchdog after server init
+    safetyMonitor.feedWatchdog();
+    Serial.println("Watchdog fed after web server initialization");
+    
     // Load and apply saved settings
     if (settings.isHeatingEnabled() && settings.getTimerDuration() > 0) {
         Serial.println("\n=== Restoring Previous Session ===");
@@ -133,10 +195,22 @@ void setup() {
     Serial.println("\n=== System Initialization Complete ===");
     Serial.println("Phase 1: Core Hardware Control System - READY");
     Serial.println("Phase 2: Device Panel Interface - READY");
+    Serial.println("Phase 3: WiFi Network and Web Panel - READY");
     Serial.println("\nSystem is in safe state:");
     Serial.println("  - Heating: OFF (safe boot state)");
     Serial.printf("  - Temperature Setpoint: %.1f°C\n", settings.getTemperatureSetpoint());
     Serial.printf("  - Timer Duration: %u minutes\n", settings.getTimerDuration());
+    Serial.printf("  - WiFi Mode: %s\n", 
+                 wifiManager.isSoftAPEnabled() && wifiManager.isStationConnected() ? "AP+STA" :
+                 wifiManager.isSoftAPEnabled() ? "AP" :
+                 wifiManager.isStationConnected() ? "STA" : "OFF");
+    Serial.println("\nAccess web panel:");
+    if (wifiManager.isSoftAPEnabled()) {
+        Serial.printf("  - Direct: http://%s\n", wifiManager.getSoftAPIP().c_str());
+    }
+    if (wifiManager.isStationConnected()) {
+        Serial.printf("  - LAN: http://%s\n", wifiManager.getStationIP().c_str());
+    }
     Serial.println("\nStarting main loop...\n");
     
     delay(1000);
@@ -150,6 +224,14 @@ void loop() {
     // Feed watchdog timer
     safetyMonitor.feedWatchdog();
     
+    // ===== PHASE 3: WiFi Update =====
+    wifiManager.update();
+    
+    // ===== PHASE 3: Web Server Update =====
+    if (webServer) {
+        webServer->update();
+    }
+    
     // ===== PHASE 2: Button Processing =====
     if (buttonManager) {
         buttonManager->update();
@@ -157,6 +239,11 @@ void loop() {
         // Trigger display animation on button activity
         if (buttonManager->isAnyButtonPressed()) {
             lastDisplayUpdateTime = 0;  // Force display update
+            
+            // Force WebSocket update when button is pressed (for real-time sync)
+            if (webServer && webServer->isRunning() && webServer->getWebSocketClientCount() > 0) {
+                webServer->sendWebSocketUpdate(WSMessageType::UPDATE, true);
+            }
         }
     }
     
@@ -204,6 +291,9 @@ void loop() {
         // Feed watchdog before potentially slow I2C operation
         safetyMonitor.feedWatchdog();
         
+        // Update WiFi status for display
+        bool wifiConnected = wifiManager.isSoftAPEnabled() || wifiManager.isStationConnected();
+        
         displayManager.update(
             roomSensor.getTemperature(),
             roomSensor.getHumidity(),
@@ -211,7 +301,7 @@ void loop() {
             settings.getTemperatureSetpoint(),
             heatingTimer.getRemainingSeconds(),
             heatingController.isHeating(),
-            false  // WiFi status (Phase 3)
+            wifiConnected  // WiFi status (Phase 3)
         );
     }
     
@@ -233,11 +323,17 @@ void printWelcomeBanner() {
     Serial.println("\n");
     Serial.println("=====================================");
     Serial.println("     RODI Smart Mattress System     ");
-    Serial.println("   Phase 2: Device Panel Interface  ");
+    Serial.println("  Phase 3: WiFi Network & Web Panel ");
     Serial.println("=====================================");
-    Serial.println("Version: 2.0.0");
+    Serial.println("Version: 3.0.0");
     Serial.println("Framework: ESP-IDF (Arduino)");
     Serial.println("Hardware: ESP32 + SSD1306 OLED");
+    Serial.println("Features:");
+    Serial.println("  - Temperature Control");
+    Serial.println("  - Timer Management");
+    Serial.println("  - WiFi Connectivity");
+    Serial.println("  - Web Control Panel");
+    Serial.println("  - Real-time Monitoring");
     Serial.println("Team: RODI");
     Serial.println("Developer: AliShafiee");
     Serial.println("HW Designer: H.Rostamizade");
@@ -287,6 +383,36 @@ void printSystemStatus() {
     } else {
         Serial.printf("║ Timer: STOPPED | Duration: %u minutes                    \n",
                      settings.getTimerDuration());
+    }
+    
+    Serial.println("╠════════════════════════════════════════════════════════════╣");
+    
+    // WiFi status
+    if (wifiManager.isSoftAPEnabled()) {
+        Serial.printf("║ SoftAP: ENABLED | SSID: %s                        \n",
+                     wifiManager.getSoftAPSSID().c_str());
+        Serial.printf("║         IP: %s | Clients: %d                      \n",
+                     wifiManager.getSoftAPIP().c_str(),
+                     wifiManager.getConnectedClients());
+    } else {
+        Serial.println("║ SoftAP: DISABLED                                          ");
+    }
+    
+    if (wifiManager.isStationConnected()) {
+        Serial.printf("║ Station: CONNECTED | SSID: %s                     \n",
+                     wifiManager.getStationSSID().c_str());
+        Serial.printf("║          IP: %s                                   \n",
+                     wifiManager.getStationIP().c_str());
+    } else {
+        Serial.println("║ Station: DISCONNECTED                                     ");
+    }
+    
+    // Web server status
+    if (webServer && webServer->isRunning()) {
+        Serial.printf("║ Web Server: RUNNING | WebSocket Clients: %d              \n",
+                     webServer->getWebSocketClientCount());
+    } else {
+        Serial.println("║ Web Server: STOPPED                                       ");
     }
     
     Serial.println("╚════════════════════════════════════════════════════════════╝\n");

@@ -228,8 +228,29 @@ void RodiWebServer::sendWebSocketUpdate(WSMessageType type, bool forceUpdate) {
         return;
     }
     
+    // For UPDATE type, check if values changed (unless forced)
+    if (type == WSMessageType::UPDATE && !forceUpdate) {
+        if (!hasValuesChanged()) {
+            return; // No changes, don't send empty update
+        }
+    }
+    
     // Build message
     String message = buildWebSocketMessage(type);
+    
+    // For UPDATE type, check if data object is empty
+    // Simple check: if message doesn't contain any data fields (just "data":{}), don't send
+    if (type == WSMessageType::UPDATE) {
+        // Check if data object has any content (more than just "data":{})
+        int dataStart = message.indexOf("\"data\":{");
+        if (dataStart >= 0) {
+            int dataEnd = message.indexOf("}", dataStart + 8);
+            if (dataEnd >= 0 && dataEnd == dataStart + 8) {
+                // Empty data object: "data":{}
+                return; // Don't send empty update
+            }
+        }
+    }
     
     // Broadcast to all clients
     wsServer->broadcastTXT(message);

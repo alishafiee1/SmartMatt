@@ -242,25 +242,22 @@ async function connectWiFi(ssid, password) {
 // ============================
 
 function updateUI(data) {
-    // Update room temperature and humidity
+    // Update room temperature and humidity (only if value exists - don't overwrite with undefined)
     if (data.room_temp !== undefined && data.room_temp !== null && !isNaN(data.room_temp)) {
         document.getElementById('room-temp').textContent = data.room_temp.toFixed(1);
-    } else {
-        document.getElementById('room-temp').textContent = '--';
     }
+    // If undefined, keep current value (don't change to '--')
     
     if (data.room_humidity !== undefined && data.room_humidity !== null && !isNaN(data.room_humidity)) {
         document.getElementById('room-humidity').textContent = data.room_humidity.toFixed(0);
-    } else {
-        document.getElementById('room-humidity').textContent = '--';
     }
+    // If undefined, keep current value (don't change to '--')
     
-    // Update mattress temperature
+    // Update mattress temperature (only if value exists - don't overwrite with undefined)
     if (data.mattress_temp !== undefined && data.mattress_temp !== null && !isNaN(data.mattress_temp)) {
         document.getElementById('mattress-temp').textContent = data.mattress_temp.toFixed(1);
-    } else {
-        document.getElementById('mattress-temp').textContent = '--';
     }
+    // If undefined, keep current value (don't change to '--')
     
     // Update temperature setpoint
     if (data.setpoint !== undefined) {

@@ -94,7 +94,27 @@ The system SHALL provide prominent power on/off toggle control.
 - **THEN** power button SHALL be visually distinct (highlighted/colored)
 
 ### Requirement: WiFi Provisioning Interface
-The system SHALL provide WiFi configuration form for home network connection.
+The system SHALL provide dedicated WiFi configuration page with network scanning capability.
+
+#### Scenario: Navigate to WiFi setup page
+- **WHEN** user clicks "Connect WiFi" or "Change WiFi" button in main page
+- **THEN** system SHALL navigate to dedicated WiFi setup page (wifi-setup.html)
+
+#### Scenario: WiFi network scanning
+- **WHEN** WiFi setup page loads
+- **THEN** system SHALL automatically scan for available WiFi networks and display list
+
+#### Scenario: Network list display
+- **WHEN** network scan completes
+- **THEN** UI SHALL display list of available networks with SSID and signal strength indicator
+
+#### Scenario: Network selection
+- **WHEN** user clicks on a network in the list
+- **THEN** SSID field SHALL be automatically filled with selected network name
+
+#### Scenario: Auto-fill saved password
+- **WHEN** user selects a network that was previously saved
+- **THEN** password field SHALL be automatically filled with saved password
 
 #### Scenario: WiFi SSID input
 - **WHEN** user enters WiFi SSID in form
@@ -115,10 +135,43 @@ The system SHALL provide WiFi configuration form for home network connection.
 #### Scenario: WiFi connection success
 - **WHEN** WiFi connection succeeds
 - **THEN** success message and assigned IP SHALL be displayed
+- **AND** user SHALL be redirected to main page
 
 #### Scenario: WiFi connection failure
 - **WHEN** WiFi connection fails
 - **THEN** error message with failure reason SHALL be displayed
+- **AND** user SHALL remain on WiFi setup page to retry
+
+#### Scenario: Back to main page
+- **WHEN** user clicks "Back" button in WiFi setup page
+- **THEN** system SHALL navigate back to main page without saving changes
+
+#### Scenario: Refresh network list
+- **WHEN** user clicks refresh button
+- **THEN** system SHALL re-scan for available networks and update list
+
+### Requirement: Main Page WiFi Status Display
+The system SHALL display WiFi connection status and provide navigation to WiFi setup.
+
+#### Scenario: WiFi connection button state
+- **WHEN** WiFi is not connected
+- **THEN** button SHALL display "Connect WiFi" text
+
+#### Scenario: WiFi connected button state
+- **WHEN** WiFi is connected successfully
+- **THEN** button SHALL display "Change WiFi" text and be styled green
+
+#### Scenario: Clickable IP address display
+- **WHEN** Station mode is connected and IP address is available
+- **THEN** IP address SHALL be displayed as clickable link
+
+#### Scenario: IP address navigation
+- **WHEN** user clicks on IP address
+- **THEN** browser SHALL open new tab with device IP address (http://[IP])
+
+#### Scenario: Navigate to WiFi setup
+- **WHEN** user clicks "Connect WiFi" or "Change WiFi" button
+- **THEN** system SHALL navigate to WiFi setup page
 
 ### Requirement: Status Indicators
 The system SHALL display visual indicators for system status.

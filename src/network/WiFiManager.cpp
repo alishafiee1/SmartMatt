@@ -158,10 +158,12 @@ void WiFiManager::disableSoftAP() {
 // Toggle SoftAP --- switch SoftAP on/off (used by power button long press) ---------------
 bool WiFiManager::toggleSoftAP() {
     if (softAPEnabled) {
-        // Prevent disabling SoftAP if Station is not connected (avoid lockout)
+        // Allow disabling SoftAP even if Station not connected (user may want to save power at night)
+        // But warn user about potential lockout
         if (!isStationConnected()) {
-            Serial.println("[WiFi] ⚠ Cannot disable SoftAP: Station not connected (lockout prevention)");
-            return true; // Return current state (still enabled)
+            Serial.println("[WiFi] ⚠ WARNING: Disabling SoftAP without Station connection");
+            Serial.println("[WiFi]   Device will be inaccessible until SoftAP is re-enabled");
+            Serial.println("[WiFi]   To re-enable: Hold power button for 3 seconds again");
         }
         disableSoftAP();
         return false;

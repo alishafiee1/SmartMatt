@@ -103,6 +103,29 @@ The system SHALL provide REST API endpoint for WiFi status query.
 - **WHEN** WiFi status is queried
 - **THEN** response SHALL NOT include WiFi password
 
+### Requirement: WiFi Network Scanning API
+The system SHALL provide REST API endpoint for scanning available WiFi networks.
+
+#### Scenario: Scan WiFi networks
+- **WHEN** GET /api/wifi/scan is requested
+- **THEN** system SHALL scan for available WiFi networks and return list
+
+#### Scenario: Network list response format
+- **WHEN** scan completes successfully
+- **THEN** response SHALL include array of networks with SSID, signal strength (RSSI), encryption type, and channel
+
+#### Scenario: Scan timeout handling
+- **WHEN** network scan takes longer than 10 seconds
+- **THEN** API SHALL return partial results or timeout error
+
+#### Scenario: Scan while connected
+- **WHEN** scan is requested while Station is connected
+- **THEN** system SHALL temporarily pause Station mode, scan, then resume connection
+
+#### Scenario: Scan response includes saved networks
+- **WHEN** scanned network matches previously saved credentials
+- **THEN** response SHALL indicate network is saved (without revealing password)
+
 ### Requirement: SoftAP Control API
 The system SHALL provide REST API endpoint for SoftAP enable/disable control.
 

@@ -134,9 +134,9 @@ void setup() {
         Serial.println("⚠ Display disabled - system will run without display");
     }
     
-    // Initialize buttons (requires Phase 1 components)
+    // Initialize buttons (requires Phase 1 & 3 components)
     Serial.println("\n=== Initializing Button Interface ===");
-    buttonManager = new ButtonManager(heatingController, heatingTimer, settings);
+    buttonManager = new ButtonManager(heatingController, heatingTimer, settings, wifiManager);
     buttonManager->begin();
     
     // ===== PHASE 3 INITIALIZATION =====

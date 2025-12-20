@@ -2,15 +2,17 @@
 #include "heating/HeatingController.h"
 #include "timer/HeatingTimer.h"
 #include "storage/SettingsStorage.h"
+#include "network/WiFiManager.h"
 
 // Static instance pointer --- for callbacks --------------------------------------------------------------
 ButtonManager* ButtonManager::s_instance = nullptr;
 
-// Constructor --- initialize with Phase 1 component references -------------------------------------------
-ButtonManager::ButtonManager(HeatingController& heatingCtrl, HeatingTimer& timer, SettingsStorage& settings)
+// Constructor --- initialize with Phase 1 & 3 component references --------------------------------------
+ButtonManager::ButtonManager(HeatingController& heatingCtrl, HeatingTimer& timer, SettingsStorage& settings, WiFiManager& wifiMgr)
     : m_heatingController(heatingCtrl)
     , m_heatingTimer(timer)
     , m_settings(settings)
+    , m_wifiManager(wifiMgr)
     , m_btnTempUp((gpio_num_t)BTN_TEMP_UP_PIN)
     , m_btnTempDown((gpio_num_t)BTN_TEMP_DOWN_PIN)
     , m_btnTimerUp((gpio_num_t)BTN_TIMER_UP_PIN)
@@ -201,11 +203,48 @@ void ButtonManager::handlePowerToggle() {
     updateActivityTime();
 }
 
-// Handler --- power button long press (reserved for Phase 3 SoftAP toggle) --------------------------------
+// Handler --- power button long press (Phase 3 SoftAP toggle) -------------------------------------------
 void ButtonManager::handlePowerLongPress() {
-    Serial.println("Power LONG PRESS detected (reserved for Phase 3 - SoftAP toggle)");
+    Serial.println("\n[Button] Power LONG PRESS detected - Toggling SoftAP...");
+    
+    // Check current state before toggle
+    bool wasEnabled = m_wifiManager.isSoftAPEnabled();
+    
+    // Toggle SoftAP state
+    bool newState = m_wifiManager.toggleSoftAP();
+    
+    // Determine if toggle was successful
+    bool toggleSucceeded = (wasEnabled != newState);
+    
+    if (toggleSucceeded) {
+        // Toggle was successful
+        if (newState) {
+            Serial.println("[Button] ✓ SoftAP ENABLED");
+            Serial.printf("[Button]   SSID: %s\n", m_wifiManager.getSoftAPSSID().c_str());
+            Serial.printf("[Button]   IP: %s\n", m_wifiManager.getSoftAPIP().c_str());
+            Serial.println("[Button]   Device is now accessible via WiFi");
+        } else {
+            Serial.println("[Button] ✓ SoftAP DISABLED");
+            
+            // Check if Station is connected (for user feedback)
+            if (m_wifiManager.isStationConnected()) {
+                Serial.printf("[Button]   Station still connected: %s\n", m_wifiManager.getStationSSID().c_str());
+                Serial.println("[Button]   Device remains accessible via home network");
+            } else {
+                Serial.println("[Button]   ⚠ WARNING: No Station connection!");
+                Serial.println("[Button]   Device is now INACCESSIBLE via WiFi");
+                Serial.println("[Button]   To re-enable: Hold power button for 3 seconds again");
+                Serial.println("[Button]   Note: This saves power by disabling WiFi radio");
+            }
+        }
+    } else {
+        // This shouldn't happen with new implementation, but handle it anyway
+        Serial.println("[Button] ⚠ SoftAP toggle failed (unknown reason)");
+        Serial.printf("[Button]   Previous state: %s\n", wasEnabled ? "ENABLED" : "DISABLED");
+        Serial.printf("[Button]   Current state: %s\n", newState ? "ENABLED" : "DISABLED");
+    }
+    
     updateActivityTime();
-    // Phase 3 will implement SoftAP toggle here
 }
 
 // Helper --- get current temperature setpoint -------------------------------------------------------------

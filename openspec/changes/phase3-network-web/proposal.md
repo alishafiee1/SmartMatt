@@ -9,6 +9,11 @@ Users need remote access to the RODI Smart Mattress for monitoring and control w
 - Create WebSocket server for real-time data streaming (temperature, status updates)
 - Build REST API for command and control operations
 - Develop responsive web panel UI (HTML/CSS/JavaScript)
+- **Create dedicated WiFi provisioning page with network scanning**
+- **Implement WiFi network scanning and display available networks**
+- **Add clickable IP address display with auto-navigation**
+- **Implement dynamic WiFi button (Connect/Change WiFi) based on connection state**
+- **Add auto-fill password for previously saved networks**
 - Add WiFi credentials storage in NVS
 - Implement SoftAP toggle via power button long press (Phase 2 integration)
 - Create WiFi status indication on OLED display
@@ -25,10 +30,10 @@ Users need remote access to the RODI Smart Mattress for monitoring and control w
   - `button-interface` (modified - power button long press activates SoftAP toggle)
   - `display-interface` (modified - WiFi icon states)
 - **Affected code**: 
-  - `src/network/` - WiFi manager, SoftAP, Station modes
-  - `src/server/` - HTTP server, WebSocket handler
-  - `src/api/` - REST API endpoints
-  - `data/` - Web panel static files (HTML/CSS/JS)
+  - `src/network/` - WiFi manager, SoftAP, Station modes, network scanning
+  - `src/server/` - HTTP server, WebSocket handler, WiFi scan API endpoint
+  - `src/api/` - REST API endpoints (WiFi provisioning, network scan)
+  - `data/` - Web panel static files (HTML/CSS/JS), new provisioning page
   - `src/storage/` - WiFi credentials persistence (extends Phase 1)
 - **Hardware dependencies**: 
   - ESP32 WiFi radio

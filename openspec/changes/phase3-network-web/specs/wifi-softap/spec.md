@@ -43,9 +43,10 @@ The system SHALL provide toggle functionality to enable or disable SoftAP mode.
 - **WHEN** power button is held for 3 seconds and SoftAP is enabled
 - **THEN** system SHALL disable SoftAP and update display icon
 
-#### Scenario: Prevent lockout on disable
+#### Scenario: Disable SoftAP without Station connection (power saving)
 - **WHEN** SoftAP disable is requested and Station mode is not connected
-- **THEN** system SHALL refuse to disable SoftAP and display warning
+- **THEN** system SHALL disable SoftAP with warning message about potential inaccessibility
+- **AND** system SHALL inform user how to re-enable SoftAP (hold power button again)
 
 ### Requirement: SoftAP State Persistence
 The system SHALL persist SoftAP enabled state across reboots.

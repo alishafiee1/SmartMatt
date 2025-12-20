@@ -5,16 +5,17 @@
 #include "ButtonDebounce.h"
 #include "config/RodiConfig.h"
 
-// Forward declarations --- for integration with Phase 1 components -----------------------------------------
+// Forward declarations --- for integration with Phase 1 & 3 components ------------------------------------
 class HeatingController;
 class HeatingTimer;
 class SettingsStorage;
+class WiFiManager;
 
 // ButtonManager class --- manages all physical buttons and their interactions ----------------------------
 class ButtonManager {
 public:
-    // Constructor --- initialize with references to Phase 1 components ------------------------------------
-    ButtonManager(HeatingController& heatingCtrl, HeatingTimer& timer, SettingsStorage& settings);
+    // Constructor --- initialize with references to Phase 1 & 3 components --------------------------------
+    ButtonManager(HeatingController& heatingCtrl, HeatingTimer& timer, SettingsStorage& settings, WiFiManager& wifiMgr);
     
     // Initialization --- setup all buttons with GPIO pins and callbacks ----------------------------------
     void begin();
@@ -27,10 +28,11 @@ public:
     uint32_t getLastActivityTime() const { return m_lastActivityTime; }
     
 private:
-    // Phase 1 component references --- for controlling system --------------------------------------------
+    // Phase 1 & 3 component references --- for controlling system ---------------------------------------
     HeatingController& m_heatingController;
     HeatingTimer& m_heatingTimer;
     SettingsStorage& m_settings;
+    WiFiManager& m_wifiManager;
     
     // Button objects --- one for each physical button ----------------------------------------------------
     ButtonDebounce m_btnTempUp;

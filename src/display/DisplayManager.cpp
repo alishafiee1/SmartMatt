@@ -11,6 +11,7 @@ DisplayManager::DisplayManager()
     , m_setpoint(0.0f)
     , m_timerSeconds(0)
     , m_heatingActive(false)
+    , m_heatingEnabled(false)
     , m_wifiConnected(false)
     , m_lastUpdateTime(0)
 {
@@ -110,7 +111,7 @@ void DisplayManager::drawBootStage2() {
 
 // Update method --- refresh display with current sensor data -----------------------------------------------
 void DisplayManager::update(float roomTemp, float roomHumidity, float mattressTemp, float setpoint,
-                           uint32_t timerSeconds, bool heatingActive, bool wifiConnected) {
+                           uint32_t timerSeconds, bool heatingActive, bool heatingEnabled, bool wifiConnected) {
     if (!m_initialized) return;
     
     // Update cached values
@@ -120,6 +121,7 @@ void DisplayManager::update(float roomTemp, float roomHumidity, float mattressTe
     m_setpoint = setpoint;
     m_timerSeconds = timerSeconds;
     m_heatingActive = heatingActive;
+    m_heatingEnabled = heatingEnabled;
     m_wifiConnected = wifiConnected;
     
     // Check if periodic update needed (5 Hz = 200ms for smooth updates)
@@ -201,8 +203,10 @@ void DisplayManager::drawStatusBar() {
         drawHeatingIcon(ICON_HEATING_X, ICON_Y);
     }
     
-    // System icon at X=64 (always on if system is running)
-    drawSystemIcon(ICON_SYSTEM_X, ICON_Y);
+    // System icon at X=64 (only when system is enabled)
+    if (m_heatingEnabled) {
+        drawSystemIcon(ICON_SYSTEM_X, ICON_Y);
+    }
 }
 
 // Bottom bar drawing --- draw room info at bottom of center column -----------------------------------------
@@ -256,10 +260,13 @@ void DisplayManager::drawSetTempArea() {
     snprintf(tempStr, sizeof(tempStr), "%.1f%c", m_setpoint, (char)247);  // One decimal, degree symbol
     
     m_display.setTextSize(1);
-    centerTextInArea(tempStr, COL_LEFT_X, 28, COL_LEFT_WIDTH, 1);
+    // Align to left edge of column (not centered)
+    m_display.setCursor(COL_LEFT_X, 28);
+    m_display.print(tempStr);
     
-    // Draw "SET" label below temperature
-    centerTextInArea("SET", COL_LEFT_X, 40, COL_LEFT_WIDTH, 1);
+    // Draw "SET" label below temperature (also left-aligned)
+    m_display.setCursor(COL_LEFT_X, 40);
+    m_display.print("SET");
 }
 
 // Center column drawing --- Current Mattress Temperature display (main) ------------------------------------
@@ -277,12 +284,20 @@ void DisplayManager::drawMainDisplayArea() {
     centerTextInArea(tempStr, COL_CENTER_X, 26, COL_CENTER_WIDTH, 2);
 }
 
-// Right column drawing --- Timer display (two lines: number + "min") --------------------------------------
+// Right column drawing --- Timer display (two lines: number + "min" or "OFF") ---------------------------
 void DisplayManager::drawTimerArea() {
+    m_display.setTextSize(1);
+    
+    // If heating system is disabled (not just element off), show "OFF" instead of timer
+    if (!m_heatingEnabled) {
+        centerTextInArea("OFF", COL_RIGHT_X, 28, COL_RIGHT_WIDTH, 1);
+        return;
+    }
+    
+    // Heating system is enabled - show timer (even if element is currently off)
     String timerStr = formatTimer(m_timerSeconds);
     
     // Draw timer number
-    m_display.setTextSize(1);
     centerTextInArea(timerStr.c_str(), COL_RIGHT_X, 26, COL_RIGHT_WIDTH, 1);
     
     // Draw "min" label below

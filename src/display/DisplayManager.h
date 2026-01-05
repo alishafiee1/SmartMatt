@@ -42,7 +42,7 @@ public:
     
     // Update method --- refresh display with current data -------------------------------------------------
     void update(float roomTemp, float roomHumidity, float mattressTemp, float setpoint, 
-                uint32_t timerSeconds, bool heatingActive, bool wifiConnected);
+                uint32_t timerSeconds, bool heatingActive, bool heatingEnabled, bool wifiConnected);
     
     // Immediate update --- force instant display refresh --------------------------------------------------
     void forceUpdate();
@@ -74,7 +74,8 @@ private:
     float m_mattressTemp;
     float m_setpoint;
     uint32_t m_timerSeconds;
-    bool m_heatingActive;
+    bool m_heatingActive;      // Heating element is currently active (heating)
+    bool m_heatingEnabled;      // Heating system is enabled (on/off state)
     bool m_wifiConnected;
     
     // Timing control --- for periodic updates -------------------------------------------------------------

@@ -204,26 +204,54 @@ void ButtonManager::handleTempDown() {
 
 // Handler --- increase timer duration ---------------------------------------------------------------------
 void ButtonManager::handleTimerUp() {
+    // If system is off, turn it on first
+    if (!m_heatingController.isEnabled()) {
+        m_heatingController.enable();
+        m_settings.setHeatingEnabled(true);
+        Serial.println("Timer UP: System turned ON");
+    }
+    
     uint32_t current = getTimerDuration();
     uint32_t newDuration = current + BTN_TIMER_INCREMENT;
     
     if (newDuration <= TIMER_MAX_MIN) {
         setTimerDuration(newDuration);
+        
+        // If timer is not running, start it with new duration
+        if (!m_heatingTimer.isRunning()) {
+            m_heatingTimer.start(newDuration);
+        }
+        
         updateActivityTime();
         Serial.printf("Timer UP: %u min → %u min\n", current, newDuration);
     } else {
         Serial.printf("Timer at maximum (%u min)\n", TIMER_MAX_MIN);
     }
+    
+    m_settings.save();
 }
 
 // Handler --- decrease timer duration ---------------------------------------------------------------------
 void ButtonManager::handleTimerDown() {
+    // If system is off, turn it on first
+    if (!m_heatingController.isEnabled()) {
+        m_heatingController.enable();
+        m_settings.setHeatingEnabled(true);
+        Serial.println("Timer DOWN: System turned ON");
+    }
+    
     uint32_t current = getTimerDuration();
     
     if (current > BTN_TIMER_INCREMENT) {
         uint32_t newDuration = current - BTN_TIMER_INCREMENT;
         if (newDuration >= TIMER_MIN_MIN) {
             setTimerDuration(newDuration);
+            
+            // If timer is not running, start it with new duration
+            if (!m_heatingTimer.isRunning()) {
+                m_heatingTimer.start(newDuration);
+            }
+            
             updateActivityTime();
             Serial.printf("Timer DOWN: %u min → %u min\n", current, newDuration);
         } else {
@@ -232,6 +260,8 @@ void ButtonManager::handleTimerDown() {
     } else {
         Serial.printf("Timer at minimum (%u min)\n", TIMER_MIN_MIN);
     }
+    
+    m_settings.save();
 }
 
 // Handler --- toggle heating system on/off ----------------------------------------------------------------

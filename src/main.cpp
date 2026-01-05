@@ -345,6 +345,7 @@ void loop() {
             settings.getTemperatureSetpoint(),
             heatingTimer.getRemainingSeconds(),
             heatingController.isHeating(),
+            heatingController.isEnabled(),
             wifiConnected  // WiFi status (Phase 3)
         );
     }

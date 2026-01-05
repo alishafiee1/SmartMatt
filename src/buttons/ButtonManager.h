@@ -77,16 +77,12 @@ class HeatingController;
 class HeatingTimer;
 class SettingsStorage;
 class WiFiManager;
-class DisplayManager;
 
 // ButtonManager class --- manages all physical buttons and their interactions ----------------------------
 class ButtonManager {
 public:
     // Constructor --- initialize with references to Phase 1 & 3 components --------------------------------
     ButtonManager(HeatingController& heatingCtrl, HeatingTimer& timer, SettingsStorage& settings, WiFiManager& wifiMgr);
-    
-    // Display integration --- register DisplayManager for animation callbacks -----------------------------
-    void setDisplayManager(DisplayManager* display) { m_displayManager = display; }
     
     // Initialization --- setup all buttons with GPIO pins and callbacks ----------------------------------
     void begin();
@@ -104,7 +100,6 @@ private:
     HeatingTimer& m_heatingTimer;
     SettingsStorage& m_settings;
     WiFiManager& m_wifiManager;
-    DisplayManager* m_displayManager;  // Optional, for animation callbacks
     
     // Button objects --- one for each physical button ----------------------------------------------------
     ButtonDebounce m_btnTempUp;

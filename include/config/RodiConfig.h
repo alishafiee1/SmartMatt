@@ -39,7 +39,7 @@
 // Timer Limits
 // ============================
 
-#define TIMER_MIN_MIN     15      // Minimum timer duration (minutes)
+#define TIMER_MIN_MIN     10      // Minimum timer duration (minutes)
 #define TIMER_MAX_MIN     (8*60)  // Maximum timer duration (8 hours in minutes)
 
 // ============================
@@ -78,13 +78,13 @@
 // Button Configuration 
 // ============================
 
-#define BTN_DEBOUNCE_MS          50      // Button debounce time (ms)
+#define BTN_DEBOUNCE_MS          20      // Button debounce time (ms) - reduced for faster response
 #define BTN_LONG_PRESS_MS        3000    // Long press threshold (3 seconds)
 #define BTN_REPEAT_START_MS      500     // Initial repeat delay when held (ms)
 #define BTN_REPEAT_FAST_MS       100     // Accelerated repeat rate (ms)
 #define BTN_REPEAT_ACCEL_TIME_MS 3000    // Time to reach fast repeat (ms)
 #define BTN_TEMP_INCREMENT       1       // Temperature change per press (°C)
-#define BTN_TIMER_INCREMENT      15      // Timer change per press (minutes)
+#define BTN_TIMER_INCREMENT      5       // Timer change per press (minutes)
 
 // ============================
 // Display Configuration 

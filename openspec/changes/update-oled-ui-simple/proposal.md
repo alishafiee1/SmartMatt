@@ -11,11 +11,11 @@ The current OLED display implementation uses a temporary debug layout (simple ve
 - **NEW**: Simple Bold/font-size animation for value changes (500ms duration)
 - **NEW**: Three-line error message for mattress sensor failure ("check" / "mattress" / "cable")
 - **MODIFIED**: Timer display format changed from `HH:MM:SS` to minutes only (`480 min`)
-- **MODIFIED**: Room information display moved to bottom of center column (`Room: 21° 23%`)
+- **MODIFIED**: Room information display moved to bottom of center column (`21° 23%` - without "Room:" prefix)
 - **MODIFIED**: Display layout changed from debug vertical list to structured three-column design
 - **MODIFIED**: Vertical divider lines added (full height Y: 0-64) at X=32 and X=96
 - **MODIFIED**: Status icons moved to top of center column only (not spanning full width)
-- **MODIFIED**: Current mattress temperature displayed as largest number in center (not room temp)
+- **MODIFIED**: Current mattress temperature displayed as main number in center with Font Size 2/3 (not room temp)
 - **REMOVED**: Zoom animation complexity (replaced with simple Bold effect)
 - **REMOVED**: Horizontal divider lines (only vertical dividers remain)
 

@@ -116,6 +116,7 @@ private:
     
     // Flags --- event processing state --------------------------------------------------------------------
     bool m_longPressTriggered;
+    bool m_shortPressTriggered;
     
     // Helper methods --- internal state processing --------------------------------------------------------
     bool readPin();

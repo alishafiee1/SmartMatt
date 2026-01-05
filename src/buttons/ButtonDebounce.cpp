@@ -50,6 +50,7 @@ ButtonDebounce::ButtonDebounce(gpio_num_t pin, bool activeHigh)
     , m_onLongPress(nullptr)
     , m_onRepeat(nullptr)
     , m_longPressTriggered(false)
+    , m_shortPressTriggered(false)
 {
 }
 
@@ -85,6 +86,7 @@ void ButtonDebounce::update() {
                 m_pressTime = now;
                 m_debounceTime = now;
                 m_longPressTriggered = false;
+                m_shortPressTriggered = false;
             }
             break;
             
@@ -101,25 +103,34 @@ void ButtonDebounce::update() {
             break;
             
         case BTN_CONFIRMED:
-            // Confirmed press - waiting for release or long press
+            // Confirmed press - trigger short press immediately for fast response
             if (!currentlyPressed) {
-                // Released - trigger short press
+                // Released - if not already triggered, trigger now (fallback)
                 m_state = BTN_IDLE;
                 m_isPressed = false;
-                if (m_onShortPress && !m_longPressTriggered) {
+                if (m_onShortPress && !m_longPressTriggered && !m_shortPressTriggered) {
                     m_onShortPress();
                 }
-            } else if (now - m_pressTime >= BTN_LONG_PRESS_MS && !m_longPressTriggered) {
-                // Long press threshold reached
-                m_longPressTriggered = true;
-                if (m_onLongPress) {
-                    m_onLongPress();
+                m_shortPressTriggered = false;
+            } else {
+                // Still pressed - trigger short press immediately on first confirmation (fast response)
+                if (m_onShortPress && !m_longPressTriggered && !m_shortPressTriggered) {
+                    m_onShortPress();
+                    m_shortPressTriggered = true;
                 }
-                m_state = BTN_HELD;
-            } else if (now - m_pressTime >= BTN_REPEAT_START_MS) {
-                // Enter repeat mode
-                m_state = BTN_REPEATING;
-                m_lastRepeatTime = now;
+                
+                if (now - m_pressTime >= BTN_LONG_PRESS_MS && !m_longPressTriggered) {
+                    // Long press threshold reached
+                    m_longPressTriggered = true;
+                    if (m_onLongPress) {
+                        m_onLongPress();
+                    }
+                    m_state = BTN_HELD;
+                } else if (now - m_pressTime >= BTN_REPEAT_START_MS) {
+                    // Enter repeat mode
+                    m_state = BTN_REPEATING;
+                    m_lastRepeatTime = now;
+                }
             }
             break;
             
@@ -200,4 +211,5 @@ uint32_t ButtonDebounce::getRepeatInterval() const {
     // Otherwise use initial repeat rate
     return BTN_REPEAT_START_MS;
 }
+
 

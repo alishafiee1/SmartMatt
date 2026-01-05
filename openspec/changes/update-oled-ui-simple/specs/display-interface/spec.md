@@ -22,11 +22,11 @@ The system SHALL display current mattress temperature in center column with larg
 
 #### Scenario: Mattress temperature as primary display
 - **WHEN** DS18B20 provides valid mattress temperature reading
-- **THEN** system SHALL display temperature with one decimal place and °C symbol in center column using Font Size 3
+- **THEN** system SHALL display temperature with one decimal place and °C symbol in center column using Font Size 2
 
 #### Scenario: Mattress temperature Bold animation
 - **WHEN** mattress temperature changes significantly (≥0.5°C)
-- **THEN** system SHALL display temperature with Font Size 4 for 500ms
+- **THEN** system SHALL display temperature with Font Size 3 for 500ms
 
 #### Scenario: Mattress sensor error indication
 - **WHEN** DS18B20 sensor fails or reading is invalid
@@ -67,7 +67,7 @@ The system SHALL display room temperature and humidity in bottom section of cent
 
 #### Scenario: Room conditions in center bottom
 - **WHEN** DHT22 provides valid readings
-- **THEN** system SHALL display "Room: XX° YY%" at Y: 54-64 in center column
+- **THEN** system SHALL display "XX° YY%" at Y: 54-64 in center column
 
 #### Scenario: Room conditions font size
 - **WHEN** room conditions are displayed
@@ -75,7 +75,7 @@ The system SHALL display room temperature and humidity in bottom section of cent
 
 #### Scenario: Room sensor error indication
 - **WHEN** DHT22 sensor fails
-- **THEN** system SHALL display "Room: --- --%" in place of values
+- **THEN** system SHALL display "--- --%" in place of values
 
 ### Requirement: System Status Icons
 The system SHALL display three status icons (WiFi, Heating, System) in top section of center column.
@@ -123,7 +123,7 @@ The system SHALL provide simple Bold animation effect by temporarily increasing 
 - **WHEN** Bold animation is active for setpoint or timer
 - **THEN** system SHALL display value with Font Size 2 instead of Font Size 1
 - **WHEN** Bold animation is active for current temperature
-- **THEN** system SHALL display value with Font Size 4 instead of Font Size 3
+- **THEN** system SHALL display value with Font Size 3 instead of Font Size 2
 
 #### Scenario: Automatic animation reset
 - **WHEN** 500ms elapsed since animation trigger

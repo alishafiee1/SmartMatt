@@ -68,6 +68,11 @@ struct BoldAnimation {
 };
 ```
 
+**Font Size Changes**:
+- Set Temp: Size 1 → 2 (Bold)
+- Current Temp: Size 2 → 3 (Bold)
+- Timer: Size 1 → 2 (Bold)
+
 **Alternatives considered**:
 - Zoom animation with easing: More complex, marginal UX improvement
 - Blink/flash: Can be annoying, less professional
@@ -115,7 +120,7 @@ struct BoldAnimation {
 - Direct feedback on heating effectiveness
 - User's main point of reference during operation
 
-**Font Size**: 3 (normal) or 4 (Bold during change) - largest on screen
+**Font Size**: 2 (normal) or 3 (Bold during change) - main display size
 
 **Alternatives considered**:
 - Room temperature in center: Less relevant to mattress heating control
@@ -255,7 +260,7 @@ When DS18B20 sensor fails or cable disconnects:
 ║   └─────┘    ║    │     cable     │          ║    └─────┘      ║
 ║              ║    └───────────────┘          ║                 ║
 ║              ║                               ║                 ║
-║              ║      Room: 21° 23%            ║                 ║
+║              ║          21° 23%              ║                 ║
 ║              ║                               ║                 ║
 ```
 
@@ -281,6 +286,8 @@ When DS18B20 sensor fails or cable disconnects:
 - [ ] Error message clears when sensor reconnects
 - [ ] No watchdog resets or performance degradation
 - [ ] Code is readable and well-commented
+- [ ] Current temperature font size fits within center column (Size 2/3)
+- [ ] Room info displays without "Room:" prefix to save space
 
 ## References
 

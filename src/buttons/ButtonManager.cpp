@@ -60,7 +60,6 @@
 #include "timer/HeatingTimer.h"
 #include "storage/SettingsStorage.h"
 #include "network/WiFiManager.h"
-#include "display/DisplayManager.h"
 
 // Static instance pointer --- for callbacks --------------------------------------------------------------
 ButtonManager* ButtonManager::s_instance = nullptr;
@@ -71,7 +70,6 @@ ButtonManager::ButtonManager(HeatingController& heatingCtrl, HeatingTimer& timer
     , m_heatingTimer(timer)
     , m_settings(settings)
     , m_wifiManager(wifiMgr)
-    , m_displayManager(nullptr)
     , m_btnTempUp((gpio_num_t)BTN_TEMP_UP_PIN)
     , m_btnTempDown((gpio_num_t)BTN_TEMP_DOWN_PIN)
     , m_btnTimerUp((gpio_num_t)BTN_TIMER_UP_PIN)
@@ -184,12 +182,6 @@ void ButtonManager::handleTempUp() {
     if (newTemp <= TEMP_MAX_C) {
         setTemperatureSetpoint(newTemp);
         updateActivityTime();
-        
-        // Trigger Bold animation on display
-        if (m_displayManager) {
-            m_displayManager->triggerSetTempBold();
-        }
-        
         Serial.printf("Temperature UP: %.1f°C → %.1f°C\n", current, newTemp);
     } else {
         Serial.printf("Temperature at maximum (%.1f°C)\n", TEMP_MAX_C);
@@ -204,12 +196,6 @@ void ButtonManager::handleTempDown() {
     if (newTemp >= TEMP_MIN_C) {
         setTemperatureSetpoint(newTemp);
         updateActivityTime();
-        
-        // Trigger Bold animation on display
-        if (m_displayManager) {
-            m_displayManager->triggerSetTempBold();
-        }
-        
         Serial.printf("Temperature DOWN: %.1f°C → %.1f°C\n", current, newTemp);
     } else {
         Serial.printf("Temperature at minimum (%.1f°C)\n", TEMP_MIN_C);
@@ -224,12 +210,6 @@ void ButtonManager::handleTimerUp() {
     if (newDuration <= TIMER_MAX_MIN) {
         setTimerDuration(newDuration);
         updateActivityTime();
-        
-        // Trigger Bold animation on display
-        if (m_displayManager) {
-            m_displayManager->triggerTimerBold();
-        }
-        
         Serial.printf("Timer UP: %u min → %u min\n", current, newDuration);
     } else {
         Serial.printf("Timer at maximum (%u min)\n", TIMER_MAX_MIN);
@@ -245,12 +225,6 @@ void ButtonManager::handleTimerDown() {
         if (newDuration >= TIMER_MIN_MIN) {
             setTimerDuration(newDuration);
             updateActivityTime();
-            
-            // Trigger Bold animation on display
-            if (m_displayManager) {
-                m_displayManager->triggerTimerBold();
-            }
-            
             Serial.printf("Timer DOWN: %u min → %u min\n", current, newDuration);
         } else {
             Serial.printf("Timer at minimum (%u min)\n", TIMER_MIN_MIN);

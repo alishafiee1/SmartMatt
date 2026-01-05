@@ -12,9 +12,7 @@ DisplayManager::DisplayManager()
     , m_timerSeconds(0)
     , m_heatingActive(false)
     , m_wifiConnected(false)
-    , m_animContext()
     , m_lastUpdateTime(0)
-    , m_prevMattressTemp(0.0f)
 {
     memset(m_errorMessage, 0, sizeof(m_errorMessage));
 }
@@ -105,7 +103,7 @@ void DisplayManager::drawBootStage2() {
     
     // Draw "RODI" in large font
     m_display.setTextSize(3);
-    centerText("RODI", DISPLAY_HEIGHT / 2 - 12, 3);
+    centerText("TODI", DISPLAY_HEIGHT / 2 - 12, 3);
     
     m_display.display();
 }
@@ -115,12 +113,6 @@ void DisplayManager::update(float roomTemp, float roomHumidity, float mattressTe
                            uint32_t timerSeconds, bool heatingActive, bool wifiConnected) {
     if (!m_initialized) return;
     
-    // Detect significant mattress temperature change (≥0.5°C) for animation trigger
-    if (abs(mattressTemp - m_prevMattressTemp) >= 0.5f && mattressTemp > -100.0f) {
-        triggerCurrentTempBold();
-        m_prevMattressTemp = mattressTemp;
-    }
-    
     // Update cached values
     m_roomTemp = roomTemp;
     m_roomHumidity = roomHumidity;
@@ -129,9 +121,6 @@ void DisplayManager::update(float roomTemp, float roomHumidity, float mattressTe
     m_timerSeconds = timerSeconds;
     m_heatingActive = heatingActive;
     m_wifiConnected = wifiConnected;
-    
-    // Update animations every cycle for precise timing
-    updateAnimations();
     
     // Check if periodic update needed (5 Hz = 200ms for smooth updates)
     uint32_t now = millis();
@@ -168,28 +157,6 @@ void DisplayManager::update(float roomTemp, float roomHumidity, float mattressTe
 // Force update --- immediate display refresh regardless of timing ------------------------------------------
 void DisplayManager::forceUpdate() {
     m_lastUpdateTime = 0;  // Force next update
-}
-
-// Animation triggers --- start Bold animation for specific values ------------------------------------------
-void DisplayManager::triggerSetTempBold() {
-    if (!m_initialized) return;
-    m_animContext.setTemp.isActive = true;
-    m_animContext.setTemp.startTime = millis();
-    forceUpdate();
-}
-
-void DisplayManager::triggerCurrentTempBold() {
-    if (!m_initialized) return;
-    m_animContext.currentTemp.isActive = true;
-    m_animContext.currentTemp.startTime = millis();
-    forceUpdate();
-}
-
-void DisplayManager::triggerTimerBold() {
-    if (!m_initialized) return;
-    m_animContext.timer.isActive = true;
-    m_animContext.timer.startTime = millis();
-    forceUpdate();
 }
 
 // Main layout drawing --- render three-column layout with all UI elements ----------------------------------
@@ -243,9 +210,9 @@ void DisplayManager::drawBottomBar() {
     char roomInfo[32];
     
     if (m_roomTemp < -100 || m_roomHumidity < 0) {
-        snprintf(roomInfo, sizeof(roomInfo), "Room: --- --%");
+        snprintf(roomInfo, sizeof(roomInfo), "--- --%");
     } else {
-        snprintf(roomInfo, sizeof(roomInfo), "Room: %.0f%c %.0f%%", 
+        snprintf(roomInfo, sizeof(roomInfo), "%.0f%c %.0f%%", 
                  m_roomTemp, (char)247, m_roomHumidity);  // char(247) = degree symbol
     }
     
@@ -282,52 +249,20 @@ void DisplayManager::drawSystemIcon(int16_t x, int16_t y) {
     m_display.drawLine(x + 4, y + 1, x + 4, y + 4, SH110X_WHITE);  // Vertical line
 }
 
-// Animation update --- update all Bold animations every cycle for precise timing --------------------------
-void DisplayManager::updateAnimations() {
-    updateBoldAnimation(m_animContext.setTemp);
-    updateBoldAnimation(m_animContext.currentTemp);
-    updateBoldAnimation(m_animContext.timer);
-}
 
-// Bold animation update --- check and disable animation after duration -------------------------------------
-void DisplayManager::updateBoldAnimation(BoldAnimation& anim) {
-    if (!anim.isActive) return;
-    
-    uint32_t elapsed = millis() - anim.startTime;
-    if (elapsed >= anim.duration) {
-        anim.isActive = false;
-    }
-}
-
-// Bold animation check --- return whether animation is currently active ------------------------------------
-bool DisplayManager::isBoldActive(const BoldAnimation& anim) const {
-    return anim.isActive;
-}
-
-// Left column drawing --- Set Temperature display with Bold animation support ------------------------------
+// Left column drawing --- Set Temperature display ----------------------------------------------------------
 void DisplayManager::drawSetTempArea() {
     char tempStr[16];
     snprintf(tempStr, sizeof(tempStr), "%.1f%c", m_setpoint, (char)247);  // One decimal, degree symbol
     
-    bool isBold = isBoldActive(m_animContext.setTemp);
-    drawSetTempWithBold(tempStr, isBold);
+    m_display.setTextSize(1);
+    centerTextInArea(tempStr, COL_LEFT_X, 28, COL_LEFT_WIDTH, 1);
     
     // Draw "SET" label below temperature
-    m_display.setTextSize(1);
     centerTextInArea("SET", COL_LEFT_X, 40, COL_LEFT_WIDTH, 1);
 }
 
-// Set temperature Bold rendering --- render with Font Size 1 or 2 -----------------------------------------
-void DisplayManager::drawSetTempWithBold(const char* text, bool isBold) {
-    uint8_t fontSize = isBold ? 2 : 1;
-    m_display.setTextSize(fontSize);
-    
-    // Center in left column, vertically positioned around Y=28
-    int16_t textY = isBold ? 24 : 28;
-    centerTextInArea(text, COL_LEFT_X, textY, COL_LEFT_WIDTH, fontSize);
-}
-
-// Center column drawing --- Current Mattress Temperature display (largest, with Bold animation) -----------
+// Center column drawing --- Current Mattress Temperature display (main) ------------------------------------
 void DisplayManager::drawMainDisplayArea() {
     char tempStr[16];
     
@@ -336,38 +271,22 @@ void DisplayManager::drawMainDisplayArea() {
         return;
     }
     
-    snprintf(tempStr, sizeof(tempStr), "%.1f%c", m_mattressTemp, (char)247);  // One decimal
+    snprintf(tempStr, sizeof(tempStr), "%.1f", m_mattressTemp);  // One decimal, no degree symbol
     
-    bool isBold = isBoldActive(m_animContext.currentTemp);
-    drawCurrentTempWithBold(tempStr, isBold);
+    m_display.setTextSize(2);
+    centerTextInArea(tempStr, COL_CENTER_X, 26, COL_CENTER_WIDTH, 2);
 }
 
-// Current temperature Bold rendering --- render with Font Size 3 or 4 (largest) ---------------------------
-void DisplayManager::drawCurrentTempWithBold(const char* text, bool isBold) {
-    uint8_t fontSize = isBold ? 4 : 3;
-    m_display.setTextSize(fontSize);
-    
-    // Center in center column, vertically positioned around Y=24
-    int16_t textY = isBold ? 18 : 24;
-    centerTextInArea(text, COL_CENTER_X, textY, COL_CENTER_WIDTH, fontSize);
-}
-
-// Right column drawing --- Timer display with Bold animation support --------------------------------------
+// Right column drawing --- Timer display (two lines: number + "min") --------------------------------------
 void DisplayManager::drawTimerArea() {
     String timerStr = formatTimer(m_timerSeconds);
     
-    bool isBold = isBoldActive(m_animContext.timer);
-    drawTimerWithBold(timerStr.c_str(), isBold);
-}
-
-// Timer Bold rendering --- render with Font Size 1 or 2 ---------------------------------------------------
-void DisplayManager::drawTimerWithBold(const char* text, bool isBold) {
-    uint8_t fontSize = isBold ? 2 : 1;
-    m_display.setTextSize(fontSize);
+    // Draw timer number
+    m_display.setTextSize(1);
+    centerTextInArea(timerStr.c_str(), COL_RIGHT_X, 26, COL_RIGHT_WIDTH, 1);
     
-    // Center in right column, vertically positioned around Y=28
-    int16_t textY = isBold ? 24 : 28;
-    centerTextInArea(text, COL_RIGHT_X, textY, COL_RIGHT_WIDTH, fontSize);
+    // Draw "min" label below
+    centerTextInArea("min", COL_RIGHT_X, 36, COL_RIGHT_WIDTH, 1);
 }
 
 // Error display --- show error message on screen -----------------------------------------------------------
@@ -427,12 +346,13 @@ void DisplayManager::centerText(const char* text, int16_t y, uint8_t textSize) {
     m_display.print(text);
 }
 
-// Helper --- format timer seconds as minutes only (e.g., "480 min") -----------------------------------------
+// Helper --- format timer seconds as minutes only (two lines: number + "min") -------------------------------
+// Add 1 second to prevent showing 9 in ones digit (e.g., 14:59 -> 15:00 display)
 String DisplayManager::formatTimer(uint32_t seconds) {
-    uint32_t minutes = seconds / 60;
+    uint32_t minutes = (seconds + 10) / 60;  // Add 1 second to round up display
     
     char buffer[16];
-    snprintf(buffer, sizeof(buffer), "%u min", minutes);
+    snprintf(buffer, sizeof(buffer), "%u", minutes);
     return String(buffer);
 }
 

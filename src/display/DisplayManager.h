@@ -28,25 +28,6 @@
 // Room info position --- bottom of center column -------------------------------------------------------
 #define ROOM_INFO_Y       54     // Room information Y position
 
-// Bold animation constants --- simple font size increase animation -------------------------------------
-#define BOLD_ANIM_DURATION_MS  500   // Bold animation duration (500ms)
-
-// Bold animation structure --- tracks single value Bold animation --------------------------------------
-struct BoldAnimation {
-    bool isActive;        // Animation currently active
-    uint32_t startTime;   // Animation start timestamp
-    uint32_t duration;    // Animation duration (always 500ms)
-    
-    BoldAnimation() : isActive(false), startTime(0), duration(BOLD_ANIM_DURATION_MS) {}
-};
-
-// Animation context --- three independent animation slots ----------------------------------------------
-struct AnimationContext {
-    BoldAnimation setTemp;      // Set temperature Bold animation
-    BoldAnimation currentTemp;  // Current temperature Bold animation
-    BoldAnimation timer;        // Timer Bold animation
-};
-
 // DisplayManager class --- manages OLED display, layout, and animations ----------------------------------
 class DisplayManager {
 public:
@@ -66,11 +47,6 @@ public:
     // Immediate update --- force instant display refresh --------------------------------------------------
     void forceUpdate();
     
-    // Animation triggers --- start Bold animation for specific value ---------------------------------------
-    void triggerSetTempBold();
-    void triggerCurrentTempBold();
-    void triggerTimerBold();
-    
     // Error display --- show error messages ---------------------------------------------------------------
     void showError(const char* message);
     void clearError();
@@ -82,11 +58,6 @@ public:
     
     // State queries --- check display state ---------------------------------------------------------------
     bool isInitialized() const { return m_initialized; }
-    bool isAnimating() const { 
-        return m_animContext.setTemp.isActive || 
-               m_animContext.currentTemp.isActive || 
-               m_animContext.timer.isActive; 
-    }
     
 private:
     // Display hardware --- Adafruit SH1106 display object ----------------------------------------------------
@@ -106,14 +77,8 @@ private:
     bool m_heatingActive;
     bool m_wifiConnected;
     
-    // Animation context --- Bold animation state for all three values -------------------------------------
-    AnimationContext m_animContext;
-    
     // Timing control --- for periodic updates -------------------------------------------------------------
     uint32_t m_lastUpdateTime;
-    
-    // Previous values cache --- for detecting significant changes ---------------------------------------
-    float m_prevMattressTemp;
     
     // Drawing methods --- UI rendering functions -----------------------------------------------------------
     void drawMainLayout();
@@ -126,18 +91,10 @@ private:
     void drawHeatingIcon(int16_t x, int16_t y);
     void drawSystemIcon(int16_t x, int16_t y);
     
-    // Column drawing methods --- data display with Bold support --------------------------------------------
+    // Column drawing methods --- data display --------------------------------------------------------------
     void drawSetTempArea();
-    void drawSetTempWithBold(const char* text, bool isBold);
     void drawMainDisplayArea();
-    void drawCurrentTempWithBold(const char* text, bool isBold);
     void drawTimerArea();
-    void drawTimerWithBold(const char* text, bool isBold);
-    
-    // Animation methods --- Bold animation processing ------------------------------------------------------
-    void updateAnimations();
-    void updateBoldAnimation(BoldAnimation& anim);
-    bool isBoldActive(const BoldAnimation& anim) const;
     
     // Boot animation stages --- boot sequence rendering ---------------------------------------------------
     void drawBootStage1();  // Rodiset.ir

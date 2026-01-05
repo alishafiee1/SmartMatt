@@ -1,3 +1,15 @@
+<style>
+body, p, h1, h2, h3, h4, h5, h6, li, ul, ol {
+    font-family: 'Segoe UI', Segoe, Tahoma, Geneva, Verdana, sans-serif !important;
+    direction: rtl;
+    text-align: right;
+}
+
+pre, code {
+    direction: ltr;
+    text-align: left;
+}
+</style>
 # 📱 طراحی صفحه نمایش تشک هوشمند RODI
 ## راهنمای ساده و کاربردی
 

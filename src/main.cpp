@@ -139,6 +139,12 @@ void setup() {
     buttonManager = new ButtonManager(heatingController, heatingTimer, settings, wifiManager);
     buttonManager->begin();
     
+    // Register DisplayManager with ButtonManager for animation callbacks
+    if (displayManager.isInitialized()) {
+        buttonManager->setDisplayManager(&displayManager);
+        Serial.println("✓ Display animations connected to button events");
+    }
+    
     // ===== PHASE 3 INITIALIZATION =====
     
     // Initialize WiFi Manager

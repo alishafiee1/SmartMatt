@@ -7,23 +7,44 @@
 #include <Wire.h>
 #include "config/RodiConfig.h"
 
-// Display element IDs --- identifies which UI element needs update/animation -------------------------------
-enum DisplayElement {
-    ELEM_NONE = 0,
-    ELEM_ROOM_TEMP,
-    ELEM_ROOM_HUMIDITY,
-    ELEM_SETPOINT,
-    ELEM_TIMER,
-    ELEM_HEATING_ICON,
-    ELEM_WIFI_ICON
+// Layout constants --- three-column vertical layout coordinates ------------------------------------------
+#define COL_LEFT_X        0      // Left column start (Set Temperature)
+#define COL_LEFT_WIDTH    32     // Left column width
+#define COL_CENTER_X      32     // Center column start (Current Temperature)
+#define COL_CENTER_WIDTH  64     // Center column width
+#define COL_RIGHT_X       96     // Right column start (Timer)
+#define COL_RIGHT_WIDTH   32     // Right column width
+
+#define DIVIDER_LEFT_X    32     // Left divider line position
+#define DIVIDER_RIGHT_X   96     // Right divider line position
+
+// Icon positions --- status icons at top of center column ----------------------------------------------
+#define ICON_WIFI_X       40     // WiFi icon X position
+#define ICON_HEATING_X    52     // Heating icon X position  
+#define ICON_SYSTEM_X     64     // System icon X position
+#define ICON_Y            1      // All icons Y position
+#define ICON_SIZE_PX      8      // Icon size in pixels (8×8)
+
+// Room info position --- bottom of center column -------------------------------------------------------
+#define ROOM_INFO_Y       54     // Room information Y position
+
+// Bold animation constants --- simple font size increase animation -------------------------------------
+#define BOLD_ANIM_DURATION_MS  500   // Bold animation duration (500ms)
+
+// Bold animation structure --- tracks single value Bold animation --------------------------------------
+struct BoldAnimation {
+    bool isActive;        // Animation currently active
+    uint32_t startTime;   // Animation start timestamp
+    uint32_t duration;    // Animation duration (always 500ms)
+    
+    BoldAnimation() : isActive(false), startTime(0), duration(BOLD_ANIM_DURATION_MS) {}
 };
 
-// Animation states --- tracks zoom animation lifecycle ----------------------------------------------------
-enum AnimationState {
-    ANIM_NONE,          // No animation active
-    ANIM_ZOOM_IN,       // Zooming in (enlarging element)
-    ANIM_HOLD,          // Holding zoomed state
-    ANIM_ZOOM_OUT       // Zooming out (returning to normal)
+// Animation context --- three independent animation slots ----------------------------------------------
+struct AnimationContext {
+    BoldAnimation setTemp;      // Set temperature Bold animation
+    BoldAnimation currentTemp;  // Current temperature Bold animation
+    BoldAnimation timer;        // Timer Bold animation
 };
 
 // DisplayManager class --- manages OLED display, layout, and animations ----------------------------------
@@ -45,12 +66,15 @@ public:
     // Immediate update --- force instant display refresh --------------------------------------------------
     void forceUpdate();
     
-    // Animation triggers --- start zoom animation for specific element -------------------------------------
-    void animateElement(DisplayElement element);
+    // Animation triggers --- start Bold animation for specific value ---------------------------------------
+    void triggerSetTempBold();
+    void triggerCurrentTempBold();
+    void triggerTimerBold();
     
     // Error display --- show error messages ---------------------------------------------------------------
     void showError(const char* message);
     void clearError();
+    void showMattressSensorError();
     
     // Display control --- turn display on/off -------------------------------------------------------------
     void displayOn();
@@ -58,7 +82,11 @@ public:
     
     // State queries --- check display state ---------------------------------------------------------------
     bool isInitialized() const { return m_initialized; }
-    bool isAnimating() const { return m_animState != ANIM_NONE; }
+    bool isAnimating() const { 
+        return m_animContext.setTemp.isActive || 
+               m_animContext.currentTemp.isActive || 
+               m_animContext.timer.isActive; 
+    }
     
 private:
     // Display hardware --- Adafruit SH1106 display object ----------------------------------------------------
@@ -78,28 +106,38 @@ private:
     bool m_heatingActive;
     bool m_wifiConnected;
     
-    // Animation state --- current animation parameters -----------------------------------------------------
-    AnimationState m_animState;
-    DisplayElement m_animElement;
-    uint32_t m_animStartTime;
-    uint32_t m_animIdleStart;
-    float m_animScale;
+    // Animation context --- Bold animation state for all three values -------------------------------------
+    AnimationContext m_animContext;
     
     // Timing control --- for periodic updates -------------------------------------------------------------
     uint32_t m_lastUpdateTime;
     
+    // Previous values cache --- for detecting significant changes ---------------------------------------
+    float m_prevMattressTemp;
+    
     // Drawing methods --- UI rendering functions -----------------------------------------------------------
     void drawMainLayout();
-    void drawRoomConditions();
-    void drawSetpoint();
-    void drawTimer();
-    void drawHeatingIcon();
-    void drawWiFiIcon();
+    void drawVerticalDividers();
+    void drawStatusBar();
+    void drawBottomBar();
     
-    // Animation methods --- animation processing -----------------------------------------------------------
-    void updateAnimation();
-    float calculateAnimationScale(uint32_t elapsed);
-    void drawAnimatedElement();
+    // Icon drawing methods --- 8×8 pixel status icons ------------------------------------------------------
+    void drawWiFiIcon(int16_t x, int16_t y);
+    void drawHeatingIcon(int16_t x, int16_t y);
+    void drawSystemIcon(int16_t x, int16_t y);
+    
+    // Column drawing methods --- data display with Bold support --------------------------------------------
+    void drawSetTempArea();
+    void drawSetTempWithBold(const char* text, bool isBold);
+    void drawMainDisplayArea();
+    void drawCurrentTempWithBold(const char* text, bool isBold);
+    void drawTimerArea();
+    void drawTimerWithBold(const char* text, bool isBold);
+    
+    // Animation methods --- Bold animation processing ------------------------------------------------------
+    void updateAnimations();
+    void updateBoldAnimation(BoldAnimation& anim);
+    bool isBoldActive(const BoldAnimation& anim) const;
     
     // Boot animation stages --- boot sequence rendering ---------------------------------------------------
     void drawBootStage1();  // Rodiset.ir
@@ -107,8 +145,10 @@ private:
     
     // Helper methods --- utility functions -----------------------------------------------------------------
     void centerText(const char* text, int16_t y, uint8_t textSize = 1);
-    void drawTextWithScale(const char* text, int16_t x, int16_t y, uint8_t baseSize, float scale);
-    String formatTimer(uint32_t seconds);
+    void centerTextInArea(const char* text, int16_t x, int16_t y, int16_t width, uint8_t textSize = 1);
+    int16_t getTextWidth(const char* text, uint8_t textSize);
+    int16_t getTextHeight(uint8_t textSize);
+    String formatTimer(uint32_t seconds);  // Now returns minutes only
 };
 
 #endif // DISPLAY_MANAGER_H

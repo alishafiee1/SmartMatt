@@ -1,3 +1,60 @@
+/**
+ * ====================================================================================
+ * ButtonManager.cpp - پیاده‌سازی کلاس مدیریت رابط کاربری فیزیکی
+ * ====================================================================================
+ * 
+ * این فایل شامل پیاده‌سازی کامل منطق کنترل دکمه‌ها و ارتباط با سایر اجزای سیستم است.
+ * 
+ * نکات مهم پیاده‌سازی:
+ * 
+ * 1. Initialization (begin()):
+ *    - تمام دکمه‌ها با استفاده از پین‌های تعریف شده در RodiConfig.h ساخته می‌شوند
+ *    - برای هر دکمه، callback های مناسب ثبت می‌شوند
+ *    - دکمه‌های دما و تایمر از onShortPress و onRepeat استفاده می‌کنند
+ *    - دکمه Power از onShortPress و onLongPress استفاده می‌کند
+ * 
+ * 2. Update Loop:
+ *    - متد update() باید در loop اصلی فراخوانی شود
+ *    - این متد update() تمام دکمه‌ها را فراخوانی می‌کند
+ *    - State Machine هر دکمه به صورت مستقل پردازش می‌شود
+ * 
+ * 3. Temperature Handlers:
+ *    - handleTempUp() و handleTempDown() مقدار دما را تغییر می‌دهند
+ *    - محدودیت‌های min/max بررسی می‌شوند
+ *    - تغییرات به HeatingController و SettingsStorage اعمال می‌شوند
+ *    - SettingsStorage.save() برای ذخیره دائمی فراخوانی می‌شود
+ * 
+ * 4. Timer Handlers:
+ *    - handleTimerUp() و handleTimerDown() مدت زمان تایمر را تغییر می‌دهند
+ *    - محدودیت‌های min/max بررسی می‌شوند
+ *    - اگر تایمر در حال اجرا باشد، با مقدار جدید restart می‌شود
+ *    - تغییرات در SettingsStorage ذخیره می‌شوند
+ * 
+ * 5. Power Handler:
+ *    - handlePowerToggle() وضعیت سیستم گرمایش را تغییر می‌دهد
+ *    - هنگام روشن کردن: HeatingController را enable می‌کند و تایمر را شروع می‌کند
+ *    - هنگام خاموش کردن: HeatingController را disable می‌کند و تایمر را متوقف می‌کند
+ *    - وضعیت در SettingsStorage ذخیره می‌شود
+ * 
+ * 6. SoftAP Toggle (Long Press):
+ *    - handlePowerLongPress() SoftAP WiFi را toggle می‌کند
+ *    - وضعیت قبل و بعد از toggle بررسی می‌شود
+ *    - اگر Station متصل نباشد، هشدار می‌دهد
+ *    - اطلاعات SSID و IP برای کاربر نمایش داده می‌شود
+ * 
+ * 7. Activity Tracking:
+ *    - updateActivityTime() زمان آخرین فعالیت را به‌روزرسانی می‌کند
+ *    - این زمان برای DisplayManager (انیمیشن‌ها) و timeout استفاده می‌شود
+ *    - در تمام handler ها فراخوانی می‌شود
+ * 
+ * 8. Static Callbacks:
+ *    - تمام callback ها static هستند تا با ButtonDebounce سازگار باشند
+ *    - از s_instance برای دسترسی به متدهای instance استفاده می‌کنند
+ *    - این الگو برای callback های C-style ضروری است
+ * 
+ * ====================================================================================
+ */
+
 #include "ButtonManager.h"
 #include "heating/HeatingController.h"
 #include "timer/HeatingTimer.h"

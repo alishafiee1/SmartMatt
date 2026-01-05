@@ -127,7 +127,24 @@ bool RodiWebServer::begin() {
     // Register 404 handler
     httpServer->onNotFound(handleNotFound);
     
+    // CRITICAL: Verify WiFi is active before starting HTTP server
+    // This prevents "tcpip_send_msg_wait_sem (Invalid mbox)" error
+    wifi_mode_t wifiMode = WiFi.getMode();
+    if (wifiMode == WIFI_OFF) {
+        Serial.println("[WebServer] ✗ CRITICAL ERROR: WiFi mode is OFF!");
+        Serial.println("[WebServer]   HTTP server cannot start without WiFi");
+        Serial.println("[WebServer]   This will cause a crash - aborting server start");
+        return false; // Don't start server if WiFi is off
+    }
+    
+    Serial.printf("[WebServer] WiFi mode: %d (should not be 0=WIFI_OFF)\n", wifiMode);
+    
+    // Additional delay to ensure TCP/IP stack is fully ready
+    // Even if WiFi mode is set, TCP/IP stack needs time to initialize
+    delay(1000);
+    
     // Start HTTP server
+    Serial.println("[WebServer] Starting HTTP server...");
     httpServer->begin();
     Serial.printf("[WebServer] ✓ HTTP server started on port %d\n", HTTP_SERVER_PORT);
     

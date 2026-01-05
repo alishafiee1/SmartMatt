@@ -20,18 +20,18 @@
 #define I2C_FREQ_HZ       400000 // I2C frequency 400kHz (fast mode)
 
 // Physical Buttons (Phase 2)
-#define BTN_TEMP_UP_PIN   13     // GPIO13 - Temperature increase button
-#define BTN_TEMP_DOWN_PIN 12     // GPIO12 - Temperature decrease button
-#define BTN_TIMER_UP_PIN  14     // GPIO14 - Timer increase button
-#define BTN_TIMER_DOWN_PIN 27    // GPIO27 - Timer decrease button
+#define BTN_TEMP_UP_PIN   14     // GPIO14 - Temperature increase button
+#define BTN_TEMP_DOWN_PIN 27     // GPIO27 - Temperature decrease button
+#define BTN_TIMER_UP_PIN  13     // GPIO13 - Timer increase button
+#define BTN_TIMER_DOWN_PIN 12    // GPIO12 - Timer decrease button
 #define BTN_POWER_PIN     26     // GPIO26 - Power/heating toggle button
 
 // ============================
 // Temperature Limits & Defaults
 // ============================
 
-#define TEMP_MIN_C        20.0f  // Minimum safe temperature (°C)
-#define TEMP_MAX_C        45.0f  // Maximum safe temperature (°C)
+#define TEMP_MIN_C        10.0f  // Minimum safe temperature (°C)
+#define TEMP_MAX_C        60.0f  // Maximum safe temperature (°C)
 #define TEMP_DEFAULT_C    25.0f  // Default temperature setpoint (°C)
 #define TEMP_HYSTERESIS_C 2.0f   // Hysteresis for heating control (°C)
 
@@ -75,7 +75,7 @@
 #define DEBUG_ENABLED            true    // Enable debug logging
 
 // ============================
-// Button Configuration (Phase 2)
+// Button Configuration 
 // ============================
 
 #define BTN_DEBOUNCE_MS          50      // Button debounce time (ms)
@@ -87,7 +87,7 @@
 #define BTN_TIMER_INCREMENT      15      // Timer change per press (minutes)
 
 // ============================
-// Display Configuration (Phase 2)
+// Display Configuration 
 // ============================
 
 #define DISPLAY_WIDTH            128     // OLED display width in pixels
@@ -107,12 +107,12 @@
 #define BOOT_STAGE2_DURATION_MS  3000    // RODI logo stage duration (ms)
 
 // ============================
-// WiFi Configuration (Phase 3)
+// WiFi Configuration 
 // ============================
 
 // SoftAP Configuration
 #define WIFI_AP_SSID_PREFIX      "RODI_"           // SoftAP SSID prefix (suffix = MAC last 4 digits)
-#define WIFI_AP_PASSWORD         "rodi1234"        // SoftAP password (min 8 chars for WPA2)
+#define WIFI_AP_PASSWORD         ""                 // SoftAP password (empty = open network, min 8 chars for WPA2)
 #define WIFI_AP_CHANNEL          1                 // WiFi channel (1-13)
 #define WIFI_AP_MAX_CONNECTIONS  4                 // Maximum concurrent connections
 #define WIFI_AP_HIDDEN           false             // Broadcast SSID

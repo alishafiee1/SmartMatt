@@ -85,6 +85,15 @@ bool WiFiManager::begin() {
 bool WiFiManager::enableSoftAP() {
     Serial.println("[WiFi] Enabling SoftAP mode...");
     
+    // CRITICAL: Set WiFi mode first (required before softAPConfig/softAP)
+    // If Station is also enabled, use AP_STA mode, otherwise use AP mode
+    if (stationEnabled) {
+        WiFi.mode(WIFI_AP_STA);
+    } else {
+        WiFi.mode(WIFI_AP);
+    }
+    delay(100); // Give WiFi time to change mode
+    
     // Configure IP address
     IPAddress local_ip;
     IPAddress gateway;
@@ -111,7 +120,7 @@ bool WiFiManager::enableSoftAP() {
     
     if (success) {
         softAPEnabled = true;
-        updateMode();
+        updateMode(); // Update internal state
         
         Serial.println("[WiFi] ✓ SoftAP enabled successfully");
         Serial.printf("[WiFi]   SSID: %s\n", softAPSSID.c_str());

@@ -162,6 +162,50 @@ void setup() {
     Serial.println("\n=== Initializing Web Server ===");
     Serial.println("Note: SPIFFS initialization may take 10-15 seconds...");
     
+    // CRITICAL: Ensure WiFi is fully initialized before starting WebServer
+    // WebServer requires WiFi to be active (SoftAP or Station) to initialize TCP/IP stack
+    Serial.println("Ensuring WiFi is active for WebServer...");
+    
+    // Check if SoftAP or Station is enabled
+    bool wifiActive = wifiManager.isSoftAPEnabled() || wifiManager.isStationConnected();
+    
+    // If WiFi is not active, force enable SoftAP (required for WebServer)
+    if (!wifiActive) {
+        Serial.println("[WebServer] ⚠ WiFi not active - enabling SoftAP for WebServer...");
+        if (wifiManager.enableSoftAP()) {
+            Serial.println("[WebServer] ✓ SoftAP enabled, waiting for it to start...");
+            // Wait for SoftAP to actually start (can take a few seconds)
+            int waitCount = 0;
+            while (!wifiManager.isSoftAPEnabled() && waitCount < 30) {
+                delay(100);
+                wifiManager.update(); // Allow WiFi to process events
+                waitCount++;
+                yield(); // Allow other tasks to run
+            }
+            if (wifiManager.isSoftAPEnabled()) {
+                Serial.println("[WebServer] ✓ SoftAP is now active");
+                wifiActive = true;
+            } else {
+                Serial.println("[WebServer] ✗ SoftAP failed to start after timeout");
+            }
+        } else {
+            Serial.println("[WebServer] ✗ Failed to enable SoftAP - WebServer may not work");
+        }
+    }
+    
+    // CRITICAL: Additional delay to ensure TCP/IP stack is fully initialized
+    // This prevents "tcpip_send_msg_wait_sem (Invalid mbox)" error
+    // The TCP/IP stack needs time to initialize after WiFi mode changes
+    if (wifiActive) {
+        Serial.println("[WebServer] ✓ WiFi is active, waiting for TCP/IP stack to initialize...");
+        delay(3000); // Give TCP/IP stack sufficient time to initialize (3 seconds)
+        Serial.println("[WebServer] TCP/IP stack should be ready now");
+    } else {
+        Serial.println("[WebServer] ✗ CRITICAL: WiFi is not active - WebServer cannot start safely");
+        Serial.println("[WebServer]   System will continue but WebServer may fail");
+        delay(2000); // Still wait a bit
+    }
+    
     webServer = new RodiWebServer(
         heatingController,
         heatingTimer,

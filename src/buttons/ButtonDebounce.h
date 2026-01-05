@@ -1,3 +1,57 @@
+/**
+ * ====================================================================================
+ * ButtonDebounce - کلاس مدیریت دکمه فیزیکی با قابلیت Debouncing و تشخیص رویدادها
+ * ====================================================================================
+ * 
+ * این کلاس یک لایه پایه برای مدیریت یک دکمه فیزیکی است که وظایف زیر را انجام می‌دهد:
+ * 
+ * 1. Debouncing (حذف نویز):
+ *    - با استفاده از State Machine، نویزهای الکتریکی و لرزش‌های مکانیکی دکمه را فیلتر می‌کند
+ *    - مدت زمان debounce از طریق BTN_DEBOUNCE_MS (پیش‌فرض 50ms) قابل تنظیم است
+ * 
+ * 2. تشخیص رویدادها:
+ *    - Short Press: فشردن و رها کردن سریع دکمه
+ *    - Long Press: نگه داشتن دکمه به مدت BTN_LONG_PRESS_MS (پیش‌فرض 3 ثانیه)
+ *    - Repeat: نگه داشتن دکمه برای مدت طولانی که باعث تکرار خودکار رویداد می‌شود
+ * 
+ * 3. State Machine:
+ *    - BTN_IDLE: دکمه در حالت عادی و منتظر فشردن
+ *    - BTN_PRESSED: دکمه فشرده شده و در حال debounce
+ *    - BTN_CONFIRMED: فشردن تایید شده و منتظر رها شدن یا long press
+ *    - BTN_HELD: دکمه نگه داشته شده (بعد از long press)
+ *    - BTN_REPEATING: دکمه در حالت تکرار خودکار
+ * 
+ * 4. قابلیت Repeat با شتاب:
+ *    - در ابتدا با فاصله BTN_REPEAT_START_MS (500ms) تکرار می‌شود
+ *    - پس از BTN_REPEAT_ACCEL_TIME_MS (3 ثانیه) به BTN_REPEAT_FAST_MS (100ms) تسریع می‌شود
+ *    - این قابلیت برای تغییر سریع مقادیر (مثل دما یا تایمر) مفید است
+ * 
+ * 5. استفاده:
+ *    - این کلاس به صورت مستقیم استفاده نمی‌شود
+ *    - توسط ButtonManager برای مدیریت 5 دکمه فیزیکی استفاده می‌شود:
+ *      * دکمه افزایش دما (Temp Up)
+ *      * دکمه کاهش دما (Temp Down)
+ *      * دکمه افزایش تایمر (Timer Up)
+ *      * دکمه کاهش تایمر (Timer Down)
+ *      * دکمه پاور (Power)
+ * 
+ * 6. Callback System:
+ *    - از callback functions برای اتصال رویدادها به handler ها استفاده می‌کند
+ *    - هر دکمه می‌تواند callback های جداگانه برای Short Press، Long Press و Repeat داشته باشد
+ * 
+ * مثال استفاده:
+ *    ButtonDebounce btn(GPIO_NUM_14, false);  // دکمه با active LOW
+ *    btn.begin();
+ *    btn.onShortPress(myShortPressHandler);
+ *    btn.onLongPress(myLongPressHandler);
+ *    btn.onRepeat(myRepeatHandler);
+ *    
+ *    // در loop:
+ *    btn.update();
+ * 
+ * ====================================================================================
+ */
+
 #ifndef BUTTON_DEBOUNCE_H
 #define BUTTON_DEBOUNCE_H
 

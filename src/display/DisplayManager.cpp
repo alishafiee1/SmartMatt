@@ -62,52 +62,38 @@ void DisplayManager::showBootSequence() {
     
     Serial.println("Starting boot sequence...");
     
-    // Stage 1: Rodiset.ir (with non-blocking delays)
-    drawBootStage1();
+    // Combined stage: Show TODI logo with Rodiset.ir underneath
+    drawBootStage();
     
     // Break delay into smaller chunks to allow watchdog feeding
-    for (int i = 0; i < BOOT_STAGE1_DURATION_MS / 100; i++) {
-        delay(100);
-        yield();  // Allow other tasks to run
-    }
-    
-    // Stage 2: RODI logo (with non-blocking delays)
-    drawBootStage2();
-    
-    // Break delay into smaller chunks
-    for (int i = 0; i < BOOT_STAGE2_DURATION_MS / 100; i++) {
-        delay(100);
-        yield();  // Allow other tasks to run
-    }
+    // uint32_t totalDuration = BOOT_STAGE_DURATION_MS;
+    // for (int i = 0; i < totalDuration / 100; i++) {
+    //     delay(100);
+    //     yield();  // Allow other tasks to run
+    // }
     
     // Clear for main interface
-    m_display.clearDisplay();
-    m_display.display();
+    //m_display.clearDisplay();
+    //m_display.display();
     
     Serial.println("✓ Boot sequence complete");
 }
 
-// Boot stage 1 --- Rodiset.ir website display --------------------------------------------------------------
-void DisplayManager::drawBootStage1() {
+// Boot stage 1 --- Combined TODI logo and Rodiset.ir display ----------------------------------------------
+void DisplayManager::drawBootStage() {
     m_display.clearDisplay();
     
-    // Draw "Rodiset.ir" centered
-    m_display.setTextSize(2);
-    centerText("Rodiset.ir", DISPLAY_HEIGHT / 2 - 8, 2);
+    // Draw "TODI" in large font at top-center
+    m_display.setTextSize(3);
+    centerText("TODI", 16, 3);
+    
+    // Draw "Rodiset.ir" in small font below, centered
+    m_display.setTextSize(1);
+    centerText("Rodiset.ir", 44, 1);
     
     m_display.display();
 }
 
-// Boot stage 2 --- RODI logo display -----------------------------------------------------------------------
-void DisplayManager::drawBootStage2() {
-    m_display.clearDisplay();
-    
-    // Draw "RODI" in large font
-    m_display.setTextSize(3);
-    centerText("TODI", DISPLAY_HEIGHT / 2 - 12, 3);
-    
-    m_display.display();
-}
 
 // Update method --- refresh display with current sensor data -----------------------------------------------
 void DisplayManager::update(float roomTemp, float roomHumidity, float mattressTemp, float setpoint,

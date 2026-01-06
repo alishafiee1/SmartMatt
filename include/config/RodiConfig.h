@@ -103,8 +103,7 @@
 #define ANIM_ZOOM_SCALE          1.5f    // Zoom scale factor (150%)
 
 // Boot Sequence Configuration
-#define BOOT_STAGE1_DURATION_MS  3000    // Rodiset.ir stage duration (ms)
-#define BOOT_STAGE2_DURATION_MS  3000    // RODI logo stage duration (ms)
+#define BOOT_STAGE_DURATION_MS  3000    // Rodiset.ir stage duration (ms)
 
 // ============================
 // WiFi Configuration 

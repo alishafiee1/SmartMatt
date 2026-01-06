@@ -98,8 +98,7 @@ private:
     void drawTimerArea();
     
     // Boot animation stages --- boot sequence rendering ---------------------------------------------------
-    void drawBootStage1();  // Rodiset.ir
-    void drawBootStage2();  // RODI logo
+    void drawBootStage();  // Rodiset.ir
     
     // Helper methods --- utility functions -----------------------------------------------------------------
     void centerText(const char* text, int16_t y, uint8_t textSize = 1);

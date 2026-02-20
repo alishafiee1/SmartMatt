@@ -19,8 +19,6 @@ let wsReconnectAttempts = 0;
 const WS_MAX_RECONNECT_ATTEMPTS = 5;
 const WS_RECONNECT_DELAY = 3000;
 
-let timerInterval = null;
-let timerRemainingSeconds = 0;
 let timerDurationMinutes = 0;
 
 // ============================
@@ -192,22 +190,34 @@ async function setTemperature(setpoint) {
     }
 }
 
-async function setTimer(durationMinutes) {
+async function simulateTimerUp() {
     try {
-        const response = await fetch('/api/timer', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ duration_min: durationMinutes })
+        const response = await fetch('/api/timer/up', {
+            method: 'POST'
         });
         const data = await response.json();
         
         if (!data.success) {
-            showError(data.error || 'خطا در تنظیم تایمر');
+            showError(data.error || 'خطا در افزایش تایمر');
         }
     } catch (error) {
-        console.error('[API] Failed to set timer:', error);
+        console.error('[API] Failed to simulate timer up:', error);
+        showError('خطا در ارتباط با دستگاه');
+    }
+}
+
+async function simulateTimerDown() {
+    try {
+        const response = await fetch('/api/timer/down', {
+            method: 'POST'
+        });
+        const data = await response.json();
+        
+        if (!data.success) {
+            showError(data.error || 'خطا در کاهش تایمر');
+        }
+    } catch (error) {
+        console.error('[API] Failed to simulate timer down:', error);
         showError('خطا در ارتباط با دستگاه');
     }
 }
@@ -273,18 +283,10 @@ function updateUI(data) {
         updatePowerButton(data.heating_enabled);
     }
     
-    // Update timer (only on initial load or user change)
-    if (data.timer_remaining_sec !== undefined && data.timer_duration_min !== undefined) {
-        timerRemainingSeconds = data.timer_remaining_sec;
+    // Update timer duration (similar to temperature setpoint)
+    if (data.timer_duration_min !== undefined) {
         timerDurationMinutes = data.timer_duration_min;
         updateTimerDisplay();
-        
-        // Start client-side countdown if timer is running
-        if (data.timer_running && !timerInterval) {
-            startTimerCountdown();
-        } else if (!data.timer_running && timerInterval) {
-            stopTimerCountdown();
-        }
     }
     
     // Update sensor status
@@ -335,37 +337,9 @@ function updateSensorStatus(isHealthy) {
 }
 
 function updateTimerDisplay() {
-    // Convert seconds to minutes (round up like OLED display)
-    const minutes = Math.ceil(timerRemainingSeconds / 60);
-    
-    const display = `${minutes} دقیقه`;
+    // Display timer duration in minutes (similar to OLED display)
+    const display = `${timerDurationMinutes} دقیقه`;
     document.getElementById('timer-display').textContent = display;
-}
-
-// ============================
-// Timer Countdown (Client-Side)
-// ============================
-
-function startTimerCountdown() {
-    if (timerInterval) {
-        clearInterval(timerInterval);
-    }
-    
-    timerInterval = setInterval(function() {
-        if (timerRemainingSeconds > 0) {
-            timerRemainingSeconds--;
-            updateTimerDisplay();
-        } else {
-            stopTimerCountdown();
-        }
-    }, 1000);
-}
-
-function stopTimerCountdown() {
-    if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-    }
 }
 
 // ============================
@@ -386,15 +360,13 @@ function setupEventListeners() {
         setTemperature(newSetpoint);
     });
     
-    // Timer control buttons
+    // Timer control buttons (simulate hardware button presses)
     document.getElementById('timer-up').addEventListener('click', function() {
-        const newDuration = Math.min(timerDurationMinutes + 5, 480);
-        setTimer(newDuration);
+        simulateTimerUp();
     });
     
     document.getElementById('timer-down').addEventListener('click', function() {
-        const newDuration = Math.max(timerDurationMinutes - 5, 10);
-        setTimer(newDuration);
+        simulateTimerDown();
     });
     
     // Power button
@@ -461,14 +433,6 @@ function hideError() {
 // ============================
 // Utility Functions
 // ============================
-
-function formatTime(seconds) {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    
-    return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-}
 
 // ============================
 // Page Visibility API

@@ -31,6 +31,7 @@ class HeatingTimer;
 class SettingsStorage;
 class RoomSensor;
 class MattressSensor;
+class ButtonManager;
 
 // WebSocket message type --- defines type of data being sent ----------------------------
 enum class WSMessageType {
@@ -49,7 +50,8 @@ public:
         HeatingTimer& timer,
         SettingsStorage& settings,
         RoomSensor& roomSensor,
-        MattressSensor& mattressSensor
+        MattressSensor& mattressSensor,
+        ButtonManager& buttonMgr
     );
     
     // Destructor --- cleanup server resources --------------------------------------------
@@ -85,6 +87,7 @@ private:
     SettingsStorage& settingsStorage;
     RoomSensor& roomSensor;
     MattressSensor& mattressSensor;
+    ButtonManager& buttonManager;
     
     // Server instances
     WebServer* httpServer;              // HTTP server for static files and API
@@ -103,6 +106,7 @@ private:
     bool lastHeatingState;
     bool lastHeatingEnabled;
     uint32_t lastTimerRemaining;
+    uint32_t lastTimerDuration;
     
     // HTTP request handlers --- static functions for HTTP routes ------------------------
     
@@ -118,7 +122,8 @@ private:
     static void handlePostHeatingEnable();   // POST /api/heating/enable
     static void handlePostHeatingDisable();  // POST /api/heating/disable
     static void handlePostTemperature();     // POST /api/temperature
-    static void handlePostTimer();           // POST /api/timer
+    static void handlePostTimerUp();         // POST /api/timer/up - Simulate timer up button
+    static void handlePostTimerDown();       // POST /api/timer/down - Simulate timer down button
     static void handlePostWiFi();            // POST /api/wifi - WiFi provisioning
     static void handleGetWiFi();             // GET /api/wifi - Get WiFi status
     static void handlePostSoftAP();          // POST /api/softap - Toggle SoftAP

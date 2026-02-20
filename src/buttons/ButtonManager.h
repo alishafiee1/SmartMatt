@@ -94,6 +94,11 @@ public:
     bool isAnyButtonPressed() const;
     uint32_t getLastActivityTime() const { return m_lastActivityTime; }
     
+    // Public API --- expose button handlers for API simulation -------------------------------------------
+    // These methods allow WebServer to simulate button presses via API
+    void simulateTimerUp();      // Simulate timer up button press
+    void simulateTimerDown();    // Simulate timer down button press
+    
 private:
     // Phase 1 & 3 component references --- for controlling system ---------------------------------------
     HeatingController& m_heatingController;

@@ -211,7 +211,8 @@ void setup() {
         heatingTimer,
         settings,
         roomSensor,
-        mattressSensor
+        mattressSensor,
+        *buttonManager
     );
     
     // Feed watchdog before potentially long SPIFFS operation

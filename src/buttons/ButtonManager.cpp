@@ -368,3 +368,13 @@ void ButtonManager::updateActivityTime() {
     m_lastActivityTime = millis();
 }
 
+// Public API --- simulate timer up button press ---------------------------------------------------------
+void ButtonManager::simulateTimerUp() {
+    handleTimerUp();
+}
+
+// Public API --- simulate timer down button press -------------------------------------------------------
+void ButtonManager::simulateTimerDown() {
+    handleTimerDown();
+}
+

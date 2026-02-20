@@ -13,6 +13,7 @@
 #include "storage/SettingsStorage.h"
 #include "sensors/RoomSensor.h"
 #include "sensors/MattressSensor.h"
+#include "buttons/ButtonManager.h"
 #include <ArduinoJson.h>
 #include <SPIFFS.h>
 
@@ -25,12 +26,14 @@ RodiWebServer::RodiWebServer(
     HeatingTimer& timer,
     SettingsStorage& settings,
     RoomSensor& roomSensor,
-    MattressSensor& mattressSensor
+    MattressSensor& mattressSensor,
+    ButtonManager& buttonMgr
 ) : heatingController(heating),
     heatingTimer(timer),
     settingsStorage(settings),
     roomSensor(roomSensor),
     mattressSensor(mattressSensor),
+    buttonManager(buttonMgr),
     httpServer(nullptr),
     wsServer(nullptr),
     dnsServer(nullptr),
@@ -42,7 +45,8 @@ RodiWebServer::RodiWebServer(
     lastSetpoint(0),
     lastHeatingState(false),
     lastHeatingEnabled(false),
-    lastTimerRemaining(0)
+    lastTimerRemaining(0),
+    lastTimerDuration(0)
 {
     s_instance = this;
 }
@@ -119,7 +123,8 @@ bool RodiWebServer::begin() {
     httpServer->on("/api/heating/enable", HTTP_POST, handlePostHeatingEnable);
     httpServer->on("/api/heating/disable", HTTP_POST, handlePostHeatingDisable);
     httpServer->on("/api/temperature", HTTP_POST, handlePostTemperature);
-    httpServer->on("/api/timer", HTTP_POST, handlePostTimer);
+    httpServer->on("/api/timer/up", HTTP_POST, handlePostTimerUp);
+    httpServer->on("/api/timer/down", HTTP_POST, handlePostTimerDown);
     httpServer->on("/api/wifi", HTTP_GET, handleGetWiFi);
     httpServer->on("/api/wifi", HTTP_POST, handlePostWiFi);
     httpServer->on("/api/softap", HTTP_POST, handlePostSoftAP);
@@ -472,46 +477,41 @@ void RodiWebServer::handlePostTemperature() {
     s_instance->sendWebSocketUpdate(WSMessageType::UPDATE, true);
 }
 
-// POST /api/timer --- Set timer duration -------------------------------------------------
-void RodiWebServer::handlePostTimer() {
-    if (!s_instance || !s_instance->httpServer) return;
+// POST /api/timer/up --- Simulate timer up button press ----------------------------------
+void RodiWebServer::handlePostTimerUp() {
+    if (!s_instance) return;
     
-    Serial.println("[WebServer] POST /api/timer");
+    Serial.println("[WebServer] POST /api/timer/up");
     
-    // Parse JSON body
-    String body = s_instance->httpServer->arg("plain");
+    // Simulate hardware timer up button press
+    s_instance->buttonManager.simulateTimerUp();
     
-    StaticJsonDocument<200> doc;
-    DeserializationError error = deserializeJson(doc, body);
-    
-    if (error) {
-        s_instance->sendError(400, "Invalid JSON");
-        return;
-    }
-    
-    if (!doc.containsKey("duration_min")) {
-        s_instance->sendError(400, "Missing 'duration_min' field");
-        return;
-    }
-    
-    uint32_t duration = doc["duration_min"];
-    
-    // Validate range
-    if (duration < TIMER_MIN_MIN || duration > TIMER_MAX_MIN) {
-        String errorMsg = "Timer out of range (" + String(TIMER_MIN_MIN) + "-" + String(TIMER_MAX_MIN) + " minutes)";
-        s_instance->sendError(400, errorMsg);
-        return;
-    }
-    
-    // Apply timer
-    s_instance->heatingTimer.setDuration(duration);
-    s_instance->settingsStorage.setTimerDuration(duration);
-    s_instance->settingsStorage.save();
+    // Get current timer duration after change
+    uint32_t duration = s_instance->settingsStorage.getTimerDuration();
     
     String json = "{\"success\":true,\"duration_min\":" + String(duration) + "}";
     s_instance->sendJSON(200, json);
     
-    // Broadcast update
+    // Broadcast update with new timer duration
+    s_instance->sendWebSocketUpdate(WSMessageType::UPDATE, true);
+}
+
+// POST /api/timer/down --- Simulate timer down button press ------------------------------
+void RodiWebServer::handlePostTimerDown() {
+    if (!s_instance) return;
+    
+    Serial.println("[WebServer] POST /api/timer/down");
+    
+    // Simulate hardware timer down button press
+    s_instance->buttonManager.simulateTimerDown();
+    
+    // Get current timer duration after change
+    uint32_t duration = s_instance->settingsStorage.getTimerDuration();
+    
+    String json = "{\"success\":true,\"duration_min\":" + String(duration) + "}";
+    s_instance->sendJSON(200, json);
+    
+    // Broadcast update with new timer duration
     s_instance->sendWebSocketUpdate(WSMessageType::UPDATE, true);
 }
 
@@ -700,6 +700,11 @@ String RodiWebServer::buildWebSocketMessage(WSMessageType type) {
         if (timerRemaining != lastTimerRemaining) {
             data["timer_remaining_sec"] = timerRemaining;
         }
+        
+        uint32_t timerDuration = settingsStorage.getTimerDuration();
+        if (timerDuration != lastTimerDuration) {
+            data["timer_duration_min"] = timerDuration;
+        }
     }
     
     doc["timestamp"] = millis() / 1000;
@@ -717,7 +722,8 @@ bool RodiWebServer::hasValuesChanged() {
             settingsStorage.getTemperatureSetpoint() != lastSetpoint ||
             heatingController.isHeating() != lastHeatingState ||
             heatingController.isEnabled() != lastHeatingEnabled ||
-            heatingTimer.getRemainingSeconds() != lastTimerRemaining);
+            heatingTimer.getRemainingSeconds() != lastTimerRemaining ||
+            settingsStorage.getTimerDuration() != lastTimerDuration);
 }
 
 // Update cached values --- store current values for change detection --------------------
@@ -729,6 +735,7 @@ void RodiWebServer::updateCachedValues() {
     lastHeatingState = heatingController.isHeating();
     lastHeatingEnabled = heatingController.isEnabled();
     lastTimerRemaining = heatingTimer.getRemainingSeconds();
+    lastTimerDuration = settingsStorage.getTimerDuration();
 }
 
 // WebSocket event handler --- handle WebSocket events (connect, disconnect, etc.) -------

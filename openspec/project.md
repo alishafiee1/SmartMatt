@@ -6,7 +6,7 @@ RODI Smart Mattress is an IoT device that provides intelligent temperature contr
 ## Tech Stack
 - **Microcontroller**: ESP32 (ESP-IDF framework)
 - **Sensors**: 
-  - DHT22 (External temperature & humidity)
+  - DHT11 (External temperature & humidity)
   - DS18B20 (Mattress internal temperature)
 - **Display**: OLED SSD1306
 - **Communication**: WiFi (SoftAP + Station), WebSocket, REST API
@@ -94,7 +94,7 @@ RODI Smart Mattress is an IoT device that provides intelligent temperature contr
 ## External Dependencies
 - **ESP-IDF Framework**: Core development framework
 - **Sensors**:
-  - DHT22 library for temperature/humidity
+  - DHT11 library for temperature/humidity
   - OneWire/DallasTemperature for DS18B20
 - **Display**: 
   - SSD1306 OLED driver library

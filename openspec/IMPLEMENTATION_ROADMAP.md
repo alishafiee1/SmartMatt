@@ -17,7 +17,7 @@ This document provides an overview of the complete OpenSpec proposal structure f
 **Purpose**: Establish foundational hardware control system with temperature monitoring, heating control, timer management, and persistent settings storage.
 
 **Key Capabilities**:
-- Temperature monitoring (DHT22 + DS18B20)
+- Temperature monitoring (DHT11 + DS18B20)
 - Heating element control with hysteresis
 - Software timer with automatic shutoff
 - Settings persistence (NVS)
@@ -121,7 +121,7 @@ This document provides an overview of the complete OpenSpec proposal structure f
 
 ### Phase 1 Capabilities (4)
 1. `heating-control` - Temperature-based heating management
-2. `sensor-monitoring` - DHT22 + DS18B20 integration
+2. `sensor-monitoring` - DHT11 + DS18B20 integration
 3. `timer-management` - Countdown timer for auto-shutoff
 4. `settings-storage` - NVS persistence
 
@@ -188,7 +188,7 @@ Each phase must pass validation before next phase begins:
 
 ### Hardware
 - **Microcontroller**: ESP32
-- **Sensors**: DHT22 (room), DS18B20 (mattress)
+- **Sensors**: DHT11 (room), DS18B20 (mattress)
 - **Display**: SSD1306 OLED (128x64, I2C)
 - **Buttons**: 5x tactile switches
 - **Control**: Relay for heating element

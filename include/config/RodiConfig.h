@@ -8,8 +8,8 @@
 // ============================
 
 // Temperature Sensors
-#define DHT22_PIN         4      // GPIO4 - DHT22 room temp/humidity sensor
-#define DS18B20_PIN       5      // GPIO5 - DS18B20 mattress temperature sensor
+#define DHT11_PIN         32     // GPIO32 - DHT11 room temp/humidity sensor
+#define DS18B20_PIN       4      // GPIO4 - DS18B20 mattress temperature sensor
 
 // Heating Control
 #define HEATING_RELAY_PIN 2      // GPIO2 - Heating element relay control
@@ -24,7 +24,7 @@
 #define BTN_TEMP_DOWN_PIN 27     // GPIO27 - Temperature decrease button
 #define BTN_TIMER_UP_PIN  13     // GPIO13 - Timer increase button
 #define BTN_TIMER_DOWN_PIN 12    // GPIO12 - Timer decrease button
-#define BTN_POWER_PIN     26     // GPIO26 - Power/heating toggle button
+#define BTN_POWER_PIN     26    // GPIO26 - Power/heating toggle button
 
 // ============================
 // Temperature Limits & Defaults
@@ -49,7 +49,7 @@
 #define SENSOR_READ_INTERVAL_MS  2000   // Read sensors every 2 seconds
 #define SENSOR_MAX_RETRIES       3      // Maximum retry attempts for sensor reads
 #define SENSOR_TIMEOUT_MS        1000   // Timeout for sensor operations (ms)
-#define DHT22_TYPE               DHT22  // DHT sensor type
+#define DHT_TYPE               DHT11  // DHT sensor type
 
 // ============================
 // Safety Configuration

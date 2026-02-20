@@ -6,7 +6,7 @@ Phase 1 provides 6 independent modules for hardware control:
 
 | Module | Purpose | Header File |
 |--------|---------|-------------|
-| RoomSensor | DHT22 temperature & humidity | `sensors/RoomSensor.h` |
+| RoomSensor | DHT11 temperature & humidity | `sensors/RoomSensor.h` |
 | MattressSensor | DS18B20 mattress temperature | `sensors/MattressSensor.h` |
 | HeatingController | Heating element control | `heating/HeatingController.h` |
 | HeatingTimer | Countdown timer | `timer/HeatingTimer.h` |
@@ -26,10 +26,10 @@ roomSensor.begin();
 ### Methods
 
 #### `bool read()`
-Read temperature and humidity from DHT22.
+Read temperature and humidity from DHT11.
 - **Returns**: `true` if successful, `false` on error
 - **Retries**: Up to 3 attempts
-- **Call frequency**: Every 2+ seconds (DHT22 limitation)
+- **Call frequency**: Every 2+ seconds (DHT11 limitation)
 
 ```cpp
 if (roomSensor.read()) {
@@ -40,7 +40,7 @@ if (roomSensor.read()) {
 #### `float getTemperature()`
 Get last valid temperature reading.
 - **Returns**: Temperature in Celsius
-- **Range**: -40°C to 80°C (DHT22 spec)
+- **Range**: -40°C to 80°C (DHT11 spec)
 
 ```cpp
 float temp = roomSensor.getTemperature();
@@ -535,7 +535,7 @@ Future phases may add multi-threading with appropriate mutexes.
 - Update timer: Every loop iteration
 
 ### Blocking Operations
-- DHT22 read: ~250ms
+- DHT11 read: ~250ms
 - DS18B20 read: ~750ms (12-bit resolution)
 - Settings save: <50ms
 

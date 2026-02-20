@@ -59,7 +59,7 @@ The system SHALL display timer remaining time in right column (X: 96-128) in two
 The system SHALL display room temperature and humidity in bottom section of center column in compact single-line format (without "Room:" prefix).
 
 #### Scenario: Room conditions in center bottom
-- **WHEN** DHT22 provides valid readings
+- **WHEN** DHT11 provides valid readings
 - **THEN** system SHALL display "XX° YY%" at Y: 54-64 in center column
 
 #### Scenario: Room conditions font size
@@ -67,7 +67,7 @@ The system SHALL display room temperature and humidity in bottom section of cent
 - **THEN** system SHALL use Font Size 1 for compact display
 
 #### Scenario: Room sensor error indication
-- **WHEN** DHT22 sensor fails
+- **WHEN** DHT11 sensor fails
 - **THEN** system SHALL display "--- --%" in place of values
 
 ### Requirement: System Status Icon

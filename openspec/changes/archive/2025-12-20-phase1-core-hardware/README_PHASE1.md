@@ -12,7 +12,7 @@ src/
 ├── config/
 │   └── RodiConfig.h           # Pin assignments and constants
 ├── sensors/
-│   ├── RoomSensor.h/cpp       # DHT22 room temperature & humidity
+│   ├── RoomSensor.h/cpp       # DHT11 room temperature & humidity
 │   └── MattressSensor.h/cpp   # DS18B20 mattress temperature
 ├── heating/
 │   └── HeatingController.h/cpp # Heating element control with hysteresis
@@ -27,14 +27,14 @@ src/
 ## Hardware Configuration
 
 ### Pin Assignments
-- **GPIO 4**: DHT22 (room temperature & humidity)
+- **GPIO 4**: DHT11 (room temperature & humidity)
 - **GPIO 5**: DS18B20 (mattress temperature)
 - **GPIO 2**: Heating relay control
 - **GPIO 21/22**: I2C (reserved for Phase 2 OLED)
 
 ### Components Required
 - ESP32 DevKit
-- DHT22 sensor (with pull-up resistor if needed)
+- DHT11 sensor (with pull-up resistor if needed)
 - DS18B20 sensor (with 4.7kΩ pull-up resistor)
 - Relay module (10A+ rating for heating element)
 - Adequate power supply
@@ -42,7 +42,7 @@ src/
 ## Features Implemented
 
 ### ✅ Temperature Monitoring
-- **Room Sensor (DHT22)**: Temperature and humidity monitoring
+- **Room Sensor (DHT11)**: Temperature and humidity monitoring
 - **Mattress Sensor (DS18B20)**: Critical temperature sensor
 - Automatic retry on read failure (up to 3 attempts)
 - Range validation
@@ -136,7 +136,7 @@ The system provides comprehensive status updates:
 =====================================
 
 [SafetyMonitor] Last reset reason: Power-on reset
-[RoomSensor] DHT22 initialized successfully
+[RoomSensor] DHT11 initialized successfully
 [MattressSensor] DS18B20 initialized successfully (1 device(s))
 [HeatingController] Initialized - Heating OFF (safe state)
 [HeatingTimer] Timer initialized

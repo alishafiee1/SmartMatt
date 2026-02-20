@@ -2,13 +2,13 @@
 
 void RoomSensor::begin() {
     dht.begin();
-    delay(2000);  // DHT22 requires 2 second stabilization
+    delay(2000);  // DHT11 requires 2 second stabilization
     
     // Initial read to validate sensor presence
     if (read()) {
-        Serial.println("[RoomSensor] DHT22 initialized successfully");
+        Serial.println("[RoomSensor] DHT11 initialized successfully");
     } else {
-        Serial.println("[RoomSensor] WARNING: DHT22 initialization failed - will retry");
+        Serial.println("[RoomSensor] WARNING: DHT11 initialization failed - will retry");
     }
 }
 
@@ -26,7 +26,7 @@ bool RoomSensor::read() {
             } else {
                 failureCount++;
                 healthy = false;
-                Serial.printf("[RoomSensor] ERROR: Failed to read DHT22 after %d attempts\n", 
+                Serial.printf("[RoomSensor] ERROR: Failed to read DHT11 after %d attempts\n", 
                              SENSOR_MAX_RETRIES);
                 return false;
             }

@@ -28,15 +28,15 @@ The system SHALL display information in three-column vertical layout with status
 The system SHALL display current room temperature and humidity in center section with large font.
 
 #### Scenario: Room temperature display
-- **WHEN** DHT22 provides valid reading
+- **WHEN** DHT11 provides valid reading
 - **THEN** system SHALL display temperature with one decimal place and °C symbol in large font
 
 #### Scenario: Room humidity display
-- **WHEN** DHT22 provides valid reading
+- **WHEN** DHT11 provides valid reading
 - **THEN** system SHALL display humidity as integer percentage with % symbol
 
-#### Scenario: DHT22 sensor error indication
-- **WHEN** DHT22 sensor fails or reading is invalid
+#### Scenario: DHT11 sensor error indication
+- **WHEN** DHT11 sensor fails or reading is invalid
 - **THEN** system SHALL display "---" in place of temperature and humidity values
 
 ### Requirement: Temperature Setpoint Display

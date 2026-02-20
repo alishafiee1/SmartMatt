@@ -129,7 +129,7 @@ src/
 
 ### Error Handling
 - DS18B20 sensor failure → Display error message
-- DHT22 sensor failure → Display "---" for values
+- DHT11 sensor failure → Display "---" for values
 
 ---
 
@@ -168,7 +168,7 @@ Flash: [===       ]  25.5% (used 334393 bytes from 1310720 bytes)
 - [ ] ESP32 development board
 - [ ] SSD1306 OLED display (128x64, I2C)
 - [ ] 5x tactile push buttons
-- [ ] DHT22 sensor (GPIO 4)
+- [ ] DHT11 sensor (GPIO 4)
 - [ ] DS18B20 sensor (GPIO 5)
 - [ ] Relay module (GPIO 2)
 

@@ -35,7 +35,7 @@ System is in safe state:
 
 ---
 
-#### ✅ Test 2: Sensor Readings - DHT22
+#### ✅ Test 2: Sensor Readings - DHT11
 **Status**: PASS  
 **Measurements**:
 - Temperature: 23.8°C (stable)
@@ -43,7 +43,7 @@ System is in safe state:
 - Status: OK
 - Stability: ✅ Consistent readings every 2 seconds
 
-**Conclusion**: DHT22 room sensor working perfectly.
+**Conclusion**: DHT11 room sensor working perfectly.
 
 ---
 
@@ -189,7 +189,7 @@ System is in safe state:
 
 ### Power Consumption
 - **ESP32**: ~80mA @ 3.3V
-- **DHT22**: ~1.5mA
+- **DHT11**: ~1.5mA
 - **DS18B20**: ~1.5mA
 - **Total**: ~83mA (heating relay OFF)
 
@@ -227,7 +227,7 @@ Flash: 293,821 / 1,310,720 bytes (22.4%)
 
 **Capabilities Implemented**:
 1. ✅ **heating-control**: Safe boot, hysteresis algorithm, emergency shutoff
-2. ✅ **sensor-monitoring**: DHT22 + DS18B20 with health monitoring
+2. ✅ **sensor-monitoring**: DHT11 + DS18B20 with health monitoring
 3. ✅ **timer-management**: Countdown timer with auto-shutoff
 4. ✅ **settings-storage**: NVS persistence with defaults
 

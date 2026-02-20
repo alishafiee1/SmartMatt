@@ -6,7 +6,7 @@
 #include "config/RodiConfig.h"
 
 /**
- * @brief Room sensor class for DHT22 temperature and humidity monitoring
+ * @brief Room sensor class for DHT11 temperature and humidity monitoring
  * 
  * Provides room temperature and humidity readings with error handling
  * and validation. Non-critical failures allow continued operation.
@@ -49,15 +49,15 @@ public:
     uint8_t getFailureCount() const { return failureCount; }
 
 private:
-    DHT dht{DHT22_PIN, DHT22_TYPE};
+    DHT dht{DHT11_PIN, DHT_TYPE};
     
     float temperature = TEMP_DEFAULT_C;  // Last valid temperature
     float humidity = 50.0f;              // Last valid humidity
     bool healthy = false;                // Sensor health status
     uint8_t failureCount = 0;            // Consecutive failure count
     
-    static constexpr float TEMP_MIN_VALID = -40.0f;  // DHT22 minimum
-    static constexpr float TEMP_MAX_VALID = 80.0f;   // DHT22 maximum
+    static constexpr float TEMP_MIN_VALID = -40.0f;  // DHT11 minimum
+    static constexpr float TEMP_MAX_VALID = 80.0f;   // DHT11 maximum
     static constexpr float HUMIDITY_MIN_VALID = 0.0f;
     static constexpr float HUMIDITY_MAX_VALID = 100.0f;
     

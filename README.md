@@ -21,7 +21,7 @@ RODI Smart Mattress is a comprehensive IoT solution for intelligent mattress tem
 
 ### Key Capabilities
 
-- 🌡️ **Dual Temperature Monitoring**: Room (DHT22) and mattress (DS18B20) sensors
+- 🌡️ **Dual Temperature Monitoring**: Room (DHT11) and mattress (DS18B20) sensors
 - 🔥 **Smart Heating Control**: Hysteresis-based temperature regulation (20-45°C)
 - ⏱️ **Timer Management**: Auto-shutoff timer (15 minutes - 8 hours)
 - 📱 **Web Control Panel**: Responsive web interface with real-time updates
@@ -36,7 +36,7 @@ RODI Smart Mattress is a comprehensive IoT solution for intelligent mattress tem
 ## 🚀 Features
 
 ### Phase 1: Core Hardware Control ✅
-- Temperature monitoring (DHT22 + DS18B20)
+- Temperature monitoring (DHT11 + DS18B20)
 - Heating element control with hysteresis
 - Software timer with automatic shutoff
 - Settings persistence (NVS)
@@ -76,7 +76,7 @@ RODI Smart Mattress is a comprehensive IoT solution for intelligent mattress tem
 | Component | Model | Purpose |
 |-----------|-------|---------|
 | Microcontroller | ESP32 | Main controller with WiFi |
-| Room Sensor | DHT22 | Temperature & humidity monitoring |
+| Room Sensor | DHT11 | Temperature & humidity monitoring |
 | Mattress Sensor | DS18B20 | Internal mattress temperature |
 | Display | SSD1306 OLED (128x64) | Status display |
 | Buttons | 5x Tactile switches | Physical control interface |
@@ -88,7 +88,7 @@ RODI Smart Mattress is a comprehensive IoT solution for intelligent mattress tem
 
 ```cpp
 // Temperature Sensors
-DHT22:     GPIO4
+DHT11:     GPIO4
 DS18B20:   GPIO5
 
 // Heating Control
@@ -242,7 +242,7 @@ SmartMatt/
 ├── src/
 │   ├── main.cpp                   # Main application
 │   ├── sensors/                   # Temperature sensors
-│   │   ├── RoomSensor.*           # DHT22 room sensor
+│   │   ├── RoomSensor.*           # DHT11 room sensor
 │   │   └── MattressSensor.*       # DS18B20 mattress sensor
 │   ├── heating/                   # Heating control
 │   │   └── HeatingController.*    # Temperature-based heating

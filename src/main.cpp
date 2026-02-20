@@ -3,7 +3,7 @@
  * 
  * Feature-based architecture implementing:
  * Phase 1:
- * - Temperature monitoring (DHT22 + DS18B20)
+ * - Temperature monitoring (DHT11 + DS18B20)
  * - Heating control with hysteresis
  * - Timer management for auto-shutoff
  * - Settings persistence (NVS)
@@ -295,7 +295,7 @@ void loop() {
     if (millis() - lastSensorReadTime >= SENSOR_READ_INTERVAL_MS) {
         lastSensorReadTime = millis();
         
-        // Read room sensor (DHT22)
+        // Read room sensor (DHT11)
         roomSensor.read();
         
         // Read mattress sensor (DS18B20) - critical for heating control

@@ -48,10 +48,10 @@ This phase establishes the foundational hardware control system for the RODI Sma
 - Object-oriented class hierarchy: Rejected as over-engineered for embedded system
 
 ### 2. Temperature Sensor Strategy
-**Decision**: Use two sensors (DHT22 for room, DS18B20 for mattress) with independent validation
+**Decision**: Use two sensors (DHT11 for room, DS18B20 for mattress) with independent validation
 
 **Rationale**:
-- DHT22 provides both temperature and humidity for room monitoring
+- DHT11 provides both temperature and humidity for room monitoring
 - DS18B20 provides accurate mattress internal temperature
 - Independent sensors allow cross-validation
 - DS18B20 failure triggers immediate safety shutoff
@@ -134,7 +134,7 @@ Keys:
 
 ```
 ┌─────────────┐
-│   DHT22     │──→ Room Temp/Humidity ──┐
+│   DHT11     │──→ Room Temp/Humidity ──┐
 └─────────────┘                          │
                                          ↓
 ┌─────────────┐                    ┌──────────────┐
@@ -159,7 +159,7 @@ Keys:
 
 ```c
 // Temperature Sensors
-#define DHT22_PIN         GPIO_NUM_4
+#define DHT11_PIN         GPIO_NUM_4
 #define DS18B20_PIN       GPIO_NUM_5
 
 // Heating Control
@@ -199,7 +199,7 @@ Keys:
   - Retry up to 3 times
   - If persistent: Disable heating, set error flag
   - Log error to serial
-- **DHT22 read failure**: 
+- **DHT11 read failure**: 
   - Retry up to 3 times
   - Non-critical: Continue operation, use last valid reading
   - Display error indicator (Phase 2)
@@ -312,7 +312,7 @@ Critical safety scenarios:
 
 ### Hardware Dependencies
 - ESP32 DevKit with sufficient GPIO pins
-- DHT22 sensor properly powered (3.3V or 5V depending on module)
+- DHT11 sensor properly powered (3.3V or 5V depending on module)
 - DS18B20 with 4.7kΩ pull-up resistor on data line
 - Relay module for heating element control (isolated, 10A+ rating)
 - Adequate power supply for ESP32 + peripherals

@@ -19,7 +19,7 @@ SmartMatt/
 │   ├── config/
 │   │   └── RodiConfig.h               # Pin assignments & constants
 │   ├── sensors/
-│   │   ├── RoomSensor.h/cpp           # DHT22 driver
+│   │   ├── RoomSensor.h/cpp           # DHT11 driver
 │   │   └── MattressSensor.h/cpp       # DS18B20 driver
 │   ├── heating/
 │   │   └── HeatingController.h/cpp    # Hysteresis control
@@ -39,7 +39,7 @@ SmartMatt/
 ### 2. Features Implemented ✅
 
 #### Temperature Monitoring
-- ✅ DHT22 room sensor (temperature + humidity)
+- ✅ DHT11 room sensor (temperature + humidity)
 - ✅ DS18B20 mattress sensor (critical for heating)
 - ✅ Automatic retry logic (3 attempts)
 - ✅ Range validation
@@ -155,7 +155,7 @@ All 4 Phase 1 capabilities fully implemented:
    - Emergency shutoff on sensor failure
 
 2. **sensor-monitoring** ✅
-   - DHT22 room sensor integration
+   - DHT11 room sensor integration
    - DS18B20 mattress sensor integration
    - Health monitoring and validation
 
@@ -175,7 +175,7 @@ All 4 Phase 1 capabilities fully implemented:
 
 ### Components Needed
 - ✅ ESP32 DevKit (any variant)
-- ✅ DHT22 sensor module
+- ✅ DHT11 sensor module
 - ✅ DS18B20 waterproof sensor
 - ✅ 4.7kΩ resistor (DS18B20 pull-up)
 - ✅ Relay module (10A+ rating)
@@ -185,7 +185,7 @@ All 4 Phase 1 capabilities fully implemented:
 ### Pin Connections
 ```
 ESP32          Component
-GPIO 4    ───  DHT22 DATA
+GPIO 4    ───  DHT11 DATA
 GPIO 5    ───  DS18B20 DATA (+ 4.7kΩ to 3.3V)
 GPIO 2    ───  Relay IN
 GPIO 21   ───  (Reserved for Phase 2 I2C SDA)

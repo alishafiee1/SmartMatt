@@ -46,6 +46,6 @@ Users need direct physical interaction with the RODI Smart Mattress device to co
 - Temperature setpoint control APIs
 - Timer duration control APIs
 - Heating system enable/disable APIs
-- Sensor reading access (DHT22, DS18B20)
+- Sensor reading access (DHT11, DS18B20)
 - Timer remaining time access
 

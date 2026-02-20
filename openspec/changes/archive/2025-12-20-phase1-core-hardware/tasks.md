@@ -7,7 +7,7 @@
 - [x] 1.4 Create base class headers for each module
 
 ## 2. Sensor Monitoring Implementation
-- [x] 2.1 Implement DHT22 driver class for room temperature/humidity
+- [x] 2.1 Implement DHT11 driver class for room temperature/humidity
 - [x] 2.2 Implement DS18B20 driver class for mattress temperature
 - [x] 2.3 Add sensor validation and error detection logic
 - [x] 2.4 Create sensor data structure for readings
@@ -43,7 +43,7 @@
 
 ## 7. Integration & Testing
 - [x] 7.1 Integrate all modules in main.cpp
-- [x] 7.2 Test temperature reading accuracy (requires hardware) ✅ DHT22: 23.8°C, DS18B20: 23.94°C - Stable readings
+- [x] 7.2 Test temperature reading accuracy (requires hardware) ✅ DHT11: 23.8°C, DS18B20: 23.94°C - Stable readings
 - [x] 7.3 Test heating control with hysteresis (requires hardware) ✅ Safe state verified (heating OFF)
 - [x] 7.4 Test timer countdown and auto-shutoff (requires hardware) ✅ Timer initialized and ready
 - [x] 7.5 Test settings persistence across reboots (requires hardware) ✅ NVS loads defaults correctly
@@ -59,7 +59,7 @@
 ### Completed Deliverables
 - ✅ Feature-based project structure
 - ✅ Configuration system (RodiConfig.h)
-- ✅ Room sensor module (DHT22)
+- ✅ Room sensor module (DHT11)
 - ✅ Mattress sensor module (DS18B20)
 - ✅ Heating controller with hysteresis
 - ✅ Timer management system
@@ -76,7 +76,7 @@
 - **Status**: Excellent headroom for Phase 2+
 
 ### Hardware Test Results (2025-12-19)
-- ✅ **DHT22 Sensor**: Reading 23.8°C, 25% humidity - Stable and accurate
+- ✅ **DHT11 Sensor**: Reading 23.8°C, 25% humidity - Stable and accurate
 - ✅ **DS18B20 Sensor**: Reading 23.94°C - Precise mattress temperature
 - ✅ **Watchdog Timer**: Active and feeding correctly
 - ✅ **Settings Storage**: NVS working (defaults loaded on first boot)

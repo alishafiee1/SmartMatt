@@ -79,7 +79,7 @@
 ## 11. Error Display
 - [x] 11.1 Create error message display system
 - [x] 11.2 Display DS18B20 sensor error ("Check mattress sensor")
-- [x] 11.3 Display DHT22 sensor warning
+- [x] 11.3 Display DHT11 sensor warning
 - [x] 11.4 Display settings storage errors
 - [x] 11.5 Test error display persistence and clearing (requires hardware)
 

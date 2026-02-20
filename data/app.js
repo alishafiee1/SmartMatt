@@ -335,11 +335,10 @@ function updateSensorStatus(isHealthy) {
 }
 
 function updateTimerDisplay() {
-    const hours = Math.floor(timerRemainingSeconds / 3600);
-    const minutes = Math.floor((timerRemainingSeconds % 3600) / 60);
-    const seconds = timerRemainingSeconds % 60;
+    // Convert seconds to minutes (round up like OLED display)
+    const minutes = Math.ceil(timerRemainingSeconds / 60);
     
-    const display = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    const display = `${minutes} دقیقه`;
     document.getElementById('timer-display').textContent = display;
 }
 
@@ -389,12 +388,12 @@ function setupEventListeners() {
     
     // Timer control buttons
     document.getElementById('timer-up').addEventListener('click', function() {
-        const newDuration = Math.min(timerDurationMinutes + 15, 480);
+        const newDuration = Math.min(timerDurationMinutes + 5, 480);
         setTimer(newDuration);
     });
     
     document.getElementById('timer-down').addEventListener('click', function() {
-        const newDuration = Math.max(timerDurationMinutes - 15, 15);
+        const newDuration = Math.max(timerDurationMinutes - 5, 10);
         setTimer(newDuration);
     });
     

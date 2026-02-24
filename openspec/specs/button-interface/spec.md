@@ -38,23 +38,23 @@ The system SHALL provide temperature up/down buttons to adjust setpoint in 1°C 
 - **THEN** system SHALL ignore press and maintain 20°C setpoint
 
 ### Requirement: Timer Control Buttons
-The system SHALL provide timer up/down buttons to adjust duration in 15-minute increments.
+The system SHALL provide timer up/down buttons to adjust duration using step size defined by `BTN_TIMER_INCREMENT` within the range defined by `TIMER_MIN_MIN` and `TIMER_MAX_MIN`. In the current configuration this corresponds to 5-minute increments between 10 minutes and 8 hours.
 
 #### Scenario: Timer increase on up button
 - **WHEN** timer up button is pressed
-- **THEN** system SHALL increase timer duration by 15 minutes within valid range
+- **THEN** system SHALL increase timer duration by `BTN_TIMER_INCREMENT` within valid range
 
 #### Scenario: Timer decrease on down button
 - **WHEN** timer down button is pressed
-- **THEN** system SHALL decrease timer duration by 15 minutes within valid range
+- **THEN** system SHALL decrease timer duration by `BTN_TIMER_INCREMENT` within valid range
 
 #### Scenario: Timer at maximum limit
-- **WHEN** timer up button is pressed and duration is at 8 hours
-- **THEN** system SHALL ignore press and maintain 8 hour duration
+- **WHEN** timer up button is pressed and duration is at `TIMER_MAX_MIN`
+- **THEN** system SHALL ignore press and maintain maximum duration
 
 #### Scenario: Timer at minimum limit
-- **WHEN** timer down button is pressed and duration is at 15 minutes
-- **THEN** system SHALL ignore press and maintain 15 minute duration
+- **WHEN** timer down button is pressed and duration is at `TIMER_MIN_MIN`
+- **THEN** system SHALL ignore press and maintain minimum duration
 
 ### Requirement: Power Button Toggle
 The system SHALL provide power button for heating system enable/disable toggle.

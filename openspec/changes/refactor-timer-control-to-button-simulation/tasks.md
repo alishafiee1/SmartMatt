@@ -23,8 +23,8 @@
 
 ## 4. Testing
 
-- [ ] 4.1 Test timer duration reading on initial page load
-- [ ] 4.2 Test timer up/down buttons in web application
-- [ ] 4.3 Test real-time timer duration updates via WebSocket
-- [ ] 4.4 Test timer duration changes from hardware buttons appear in web application
-- [ ] 4.5 Verify timer step size and limits are controlled only in C++ code
+- [x] 4.1 Test timer duration reading on initial page load
+- [x] 4.2 Test timer up/down buttons in web application
+- [x] 4.3 Test real-time timer duration updates via WebSocket
+- [x] 4.4 Test timer duration changes from hardware buttons appear in web application
+- [x] 4.5 Verify timer step size and limits are controlled only in C++ code

@@ -51,3 +51,8 @@ The system SHALL send timer duration and remaining time values on specific event
 **Reason**: Timer countdown is now handled server-side. Clients receive remaining time via WebSocket but do not perform countdown locally.
 
 **Migration**: Clients SHALL display timer duration (not countdown) and receive duration updates via WebSocket.
+
+#### Scenario: WebSocket migration from client countdown
+- **WHEN** a client previously performed local countdown based on initial duration
+- **THEN** the client SHALL stop local countdown logic
+- **AND** the client SHALL display timer duration and remaining time values received from WebSocket messages

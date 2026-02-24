@@ -40,4 +40,8 @@ The system SHALL provide timer duration control interface that simulates hardwar
 ### Requirement: Timer Countdown Display
 **Reason**: Timer countdown display removed. System now displays timer duration only.
 
-**Migration**: Display timer duration in minutes format (e.g., "150 دقیقه") instead of HH:MM:SS countdown.
+**Migration**: Web panel SHALL display timer duration in minutes format (e.g., "150 دقیقه") instead of HH:MM:SS countdown.
+
+#### Scenario: Web panel migration from countdown
+- **WHEN** existing web panel code uses client-side countdown and HH:MM:SS display
+- **THEN** it SHALL be updated to remove countdown logic and show only timer duration in minutes format

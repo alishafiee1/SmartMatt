@@ -37,7 +37,7 @@ RODI Smart Mattress is an IoT device that provides intelligent temperature contr
 - **Data Push Strategy**: 
   - Send only on change (Option=CHANGE)
   - Full snapshot on initial connection (Option=ALL)
-- **Client-Side Timer**: Timer countdown handled in UI to reduce network traffic
+- **Server-Side Timer**: Timer countdown handled in firmware; clients display duration and receive remaining time via WebSocket
 - **JSON Standard**: All messages and API responses use JSON format
 
 ### Testing Strategy
@@ -46,7 +46,7 @@ RODI Smart Mattress is an IoT device that provides intelligent temperature contr
 - **Default Safe State**: Heating system OFF on boot/reset
 - **Range Validation**: 
   - Temperature: 20-45°C
-  - Timer: 15 minutes - 8 hours
+  - Timer: 10 minutes - 8 hours (current configuration; driven by `TIMER_MIN_MIN`/`TIMER_MAX_MIN`)
   - Hysteresis: 2°C (configurable)
 
 ### Git Workflow

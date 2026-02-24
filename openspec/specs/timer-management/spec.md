@@ -4,18 +4,18 @@
 TBD - created by archiving change phase1-core-hardware. Update Purpose after archive.
 ## Requirements
 ### Requirement: Timer Duration Configuration
-The system SHALL allow timer duration configuration within the range of 15 minutes to 8 hours with 15-minute resolution.
+The system SHALL allow timer duration configuration within the range defined by `TIMER_MIN_MIN` and `TIMER_MAX_MIN` with step size defined by `BTN_TIMER_INCREMENT`. In the current configuration this corresponds to 10 minutes minimum, 8 hours maximum, and 5-minute increments.
 
 #### Scenario: Valid timer duration configuration
-- **WHEN** timer duration is set to a value between 15 minutes and 8 hours
+- **WHEN** timer duration is set to a value between `TIMER_MIN_MIN` and `TIMER_MAX_MIN` using defined step size
 - **THEN** system SHALL accept and store the duration
 
 #### Scenario: Below minimum duration rejection
-- **WHEN** timer duration below 15 minutes is requested
+- **WHEN** timer duration below `TIMER_MIN_MIN` is requested
 - **THEN** system SHALL reject the request and maintain current duration
 
 #### Scenario: Above maximum duration rejection
-- **WHEN** timer duration above 8 hours is requested
+- **WHEN** timer duration above `TIMER_MAX_MIN` is requested
 - **THEN** system SHALL reject the request and maintain current duration
 
 ### Requirement: Timer Countdown Operation
@@ -45,11 +45,11 @@ The system SHALL reset timer to configured duration when heating system is re-en
 - **THEN** timer SHALL reset to configured duration and start countdown
 
 ### Requirement: Remaining Time Calculation
-The system SHALL provide accurate remaining time in minutes for active timer.
+The system SHALL provide accurate remaining time in seconds for active timer, calculated in firmware.
 
 #### Scenario: Calculate remaining time
 - **WHEN** timer is active and remaining time is requested
-- **THEN** system SHALL return time remaining in minutes
+- **THEN** system SHALL return time remaining in seconds
 
 #### Scenario: Zero remaining time after expiration
 - **WHEN** timer has expired

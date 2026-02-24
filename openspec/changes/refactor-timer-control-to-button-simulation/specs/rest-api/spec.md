@@ -36,3 +36,8 @@ The system SHALL provide REST API endpoints for timer control that simulate hard
 - Remove POST /api/timer endpoint that accepts duration_min
 - Replace with POST /api/timer/up and POST /api/timer/down endpoints
 - Web applications SHALL use button simulation endpoints instead of direct duration setting
+
+#### Scenario: Migration from direct timer API
+- **WHEN** an existing client calls the legacy POST /api/timer endpoint with duration_min
+- **THEN** the client MUST be updated to call POST /api/timer/up and POST /api/timer/down endpoints instead
+- **AND** the client SHALL rely on button simulation endpoints for all future timer duration changes

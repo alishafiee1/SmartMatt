@@ -66,3 +66,8 @@ The system SHALL provide accurate remaining time in seconds for active timer. Re
 **Reason**: Timer countdown is now handled server-side only. Clients receive remaining time via WebSocket but do not perform countdown calculations locally.
 
 **Migration**: Web applications SHALL display timer duration (not countdown) and receive duration updates via WebSocket when duration changes.
+
+#### Scenario: Client-side countdown removed
+- **WHEN** existing web applications rely on client-side timer countdown logic
+- **THEN** they SHALL remove local countdown implementation
+- **AND** they SHALL display only timer duration received from server via WebSocket

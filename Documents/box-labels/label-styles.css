@@ -1,0 +1,201 @@
+/* Shared styles for RODI box labels --- print-ready CSS with mm dimensions, RTL support, and CSS variables */
+
+/* ─── CSS Variables ─────────────────────────────────────────────────────────── */
+:root {
+  --color-primary:    #1a1a2e;   /* dark navy — brand primary */
+  --color-accent:     #e94560;   /* red accent */
+  --color-warning:    #f5a623;   /* amber for warning icons */
+  --color-border:     #333;
+  --color-bg:         #fff;
+  --color-text:       #111;
+  --color-text-light: #555;
+
+  --font-main: 'Segoe UI', Tahoma,'B Nazanin', 'Vazir', sans-serif;
+
+  /* Label dimensions — overridden per label via @page in each HTML file */
+  --seal-width:  160mm;
+  --seal-height: 25mm;
+  --info-width:  150mm;
+  --info-height: 100mm;
+}
+
+/* ─── Base Reset ────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  color: var(--color-text);
+  background: var(--color-bg);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* ─── Print Controls (visible in browser, hidden when printing) ─────────────── */
+.print-controls {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 100;
+  display: flex;
+  gap: 8px;
+}
+
+.btn-print {
+  padding: 8px 20px;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: var(--font-main);
+}
+
+.btn-print:hover {
+  background: var(--color-accent);
+}
+
+/* ─── Label Wrapper ─────────────────────────────────────────────────────────── */
+.label-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+  min-height: 100vh;
+  background: #e0e0e0;  /* grey background shows label boundary in browser */
+}
+
+.label {
+  background: var(--color-bg);
+  overflow: hidden;
+  position: relative;
+}
+
+/* ─── Typography Utilities ──────────────────────────────────────────────────── */
+.text-en {
+  direction: ltr;
+  unicode-bidi: embed;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.text-fa {
+  direction: rtl;
+  unicode-bidi: embed;
+  font-family: 'Segoe UI', Tahoma,'B Nazanin', 'Vazir', sans-serif;
+}
+
+.text-bold   { font-weight: 700; }
+.text-small  { font-size: 0.75em; }
+.text-center { text-align: center; }
+.text-right  { text-align: right; }
+
+/* ─── Info Row (key: value pairs) ───────────────────────────────────────────── */
+.info-row {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  line-height: 1.4;
+}
+
+.info-row .label-key {
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--color-text-light);
+  font-size: 0.78em;
+}
+
+.info-row .label-val {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+/* ─── Warning Box ───────────────────────────────────────────────────────────── */
+.warning-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.warning-icon {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  margin-top: 1px;
+}
+
+.warning-text {
+  font-size: 0.72em;
+  line-height: 1.3;
+  color: var(--color-text);
+}
+
+.warning-text strong {
+  color: var(--color-accent);
+}
+
+/* ─── QR Section ────────────────────────────────────────────────────────────── */
+.qr-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.qr-section img {
+  display: block;
+  image-rendering: pixelated;  /* keep QR sharp when scaled */
+}
+
+.qr-caption {
+  font-size: 0.65em;
+  text-align: center;
+  color: var(--color-text-light);
+  line-height: 1.2;
+}
+
+/* ─── Seal ID ───────────────────────────────────────────────────────────────── */
+.seal-id {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--color-primary);
+  border: 1.5px solid var(--color-border);
+  padding: 1px 6px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+/* ─── Divider ───────────────────────────────────────────────────────────────── */
+.divider {
+  border: none;
+  border-top: 0.5px solid var(--color-border);
+  margin: 0;
+}
+
+/* ─── @media print — hide browser UI, show only label ──────────────────────── */
+@media print {
+  body {
+    background: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .print-controls {
+    display: none !important;
+  }
+
+  .label-wrapper {
+    background: none;
+    padding: 0;
+    min-height: unset;
+    display: block;
+  }
+
+  .label {
+    box-shadow: none;
+  }
+}

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RODI — Tamper Evident Seal Label</title>
+  <link rel="stylesheet" href="label-styles.css">
+  <style>
+    /* Seal label page size: 160mm × 25mm --- fits the long opening seam of the box */
+    @page {
+      size: 160mm 25mm;
+      margin: 0;
+    }
+
+    /* ── Screen preview size ── */
+    .label {
+      width: 160mm;
+      height: 25mm;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: stretch;
+      overflow: hidden;
+    }
+
+    /* ── Left accent stripe (brand color) ── */
+    .seal-stripe {
+      width: 6mm;
+      background: var(--color-primary);
+      flex-shrink: 0;
+    }
+
+    /* ── Main content area ── */
+    .seal-body {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      padding: 0 3mm;
+      gap: 3mm;
+      direction: ltr;  /* overall LTR layout; individual text elements set their own direction */
+    }
+
+    /* ── Brand block (left side) ── */
+    .seal-brand {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      flex-shrink: 0;
+      min-width: 22mm;
+    }
+
+    .seal-brand-name {
+      font-size: 11pt;
+      font-weight: 900;
+      color: var(--color-primary);
+      letter-spacing: 2px;
+      line-height: 1;
+    }
+
+    .seal-brand-sub {
+      font-size: 5pt;
+      color: var(--color-text-light);
+      letter-spacing: 0.5px;
+      line-height: 1.2;
+      margin-top: 1px;
+    }
+
+    /* ── Vertical divider ── */
+    .seal-vdivider {
+      width: 0.5px;
+      background: #ccc;
+      align-self: stretch;
+      margin: 3px 0;
+      flex-shrink: 0;
+    }
+
+    /* ── Title block (center) ── */
+    .seal-title-block {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2px;
+    }
+
+    .seal-title-fa {
+      font-size: 7pt;
+      font-weight: 700;
+      color: var(--color-primary);
+      direction: rtl;
+      text-align: center;
+      font-family: 'Segoe UI', Tahoma,'B Nazanin', 'Vazir', sans-serif;
+    }
+
+    .seal-title-en {
+      font-size: 6pt;
+      font-weight: 600;
+      color: var(--color-accent);
+      text-align: center;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .seal-warning-text {
+      font-size: 5pt;
+      color: var(--color-text-light);
+      text-align: center;
+      line-height: 1.3;
+      direction: rtl;
+      font-family: 'Segoe UI', Tahoma,'B Nazanin', 'Vazir', sans-serif;
+    }
+
+    /* ── Seal ID block ── */
+    .seal-id-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .seal-id-label {
+      font-size: 4.5pt;
+      color: var(--color-text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── QR block ── */
+    .seal-qr-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+      flex-shrink: 0;
+    }
+
+    .seal-qr-block img {
+      width: 16mm;
+      height: 16mm;
+      display: block;
+      image-rendering: pixelated;
+    }
+
+    .seal-qr-block .qr-caption {
+      font-size: 4pt;
+    }
+
+    /* ── Right accent stripe ── */
+    .seal-stripe-right {
+      width: 6mm;
+      background: var(--color-accent);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .seal-stripe-right-text {
+      font-size: 4pt;
+      color: #fff;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      letter-spacing: 1px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+  </style>
+  <script src="label-config.js"></script>
+</head>
+<body>
+
+  <!-- Print button — hidden in print output via @media print in label-styles.css -->
+  <div class="print-controls">
+    <button class="btn-print" onclick="window.print()">🖨 Print Seal Label</button>
+  </div>
+
+  <div class="label-wrapper">
+    <div class="label">
+
+      <!-- Left brand stripe -->
+      <div class="seal-stripe"></div>
+
+      <!-- Main body -->
+      <div class="seal-body">
+
+        <!-- Brand name -->
+        <div class="seal-brand">
+          <span class="seal-brand-name">RODI</span>
+          <span class="seal-brand-sub">Smart Mattress</span>
+          <span class="seal-brand-sub text-fa" style="font-size:4.5pt; direction:rtl;">تشک هوشمند</span>
+        </div>
+
+        <div class="seal-vdivider"></div>
+
+        <!-- Title + warning text -->
+        <div class="seal-title-block">
+          <div class="seal-title-fa">پلمب اصالت محصول</div>
+          <div class="seal-title-en">Tamper Evident Seal</div>
+          <div class="seal-warning-text">در صورت باز بودن این پلمب، از خرید محصول خودداری کنید</div>
+        </div>
+
+        <div class="seal-vdivider"></div>
+
+        <!-- Seal ID -->
+        <div class="seal-id-block">
+          <span class="seal-id-label">Seal ID</span>
+          <span class="seal-id" id="sealIdDisplay">—</span>
+        </div>
+
+        <div class="seal-vdivider"></div>
+
+        <!-- QR code -->
+        <div class="seal-qr-block">
+          <img id="sealQrImg" src="" alt="QR" style="display:none;">
+          <div id="sealQrFallback" class="qr-section" style="display:none;">
+            <!-- fallback placeholder when no QR image provided -->
+            <div style="width:16mm;height:16mm;border:1px dashed #aaa;display:flex;align-items:center;justify-content:center;">
+              <span style="font-size:4pt;color:#aaa;text-align:center;">QR</span>
+            </div>
+          </div>
+          <span class="qr-caption">تأیید اصالت</span>
+        </div>
+
+      </div>
+
+      <!-- Right accent stripe -->
+      <div class="seal-stripe-right">
+        <span class="seal-stripe-right-text">VOID IF OPENED</span>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Populate dynamic data from label-config.js --- runs after DOM is ready
+    (function () {
+      const cfg = LABEL_CONFIG;
+
+      // Seal ID
+      const sealIdEl = document.getElementById('sealIdDisplay');
+      sealIdEl.textContent = cfg.unit.sealId || '________';
+
+      // QR image
+      const qrImg = document.getElementById('sealQrImg');
+      const qrFallback = document.getElementById('sealQrFallback');
+      if (cfg.qr.connectQrImage) {
+        qrImg.src = cfg.qr.connectQrImage;
+        qrImg.style.display = 'block';
+        qrImg.onerror = function () {
+          // image not found — show fallback placeholder
+          qrImg.style.display = 'none';
+          qrFallback.style.display = 'block';
+        };
+      } else {
+        qrFallback.style.display = 'block';
+      }
+    })();
+  </script>
+
+</body>
+</html>

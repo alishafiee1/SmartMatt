@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RODI — Product Information Label</title>
+  <link rel="stylesheet" href="label-styles.css">
+  <style>
+    /* Info label page size: 150mm × 100mm --- fits flat surface of box (190×160mm) */
+    @page {
+      size: 150mm 100mm;
+      margin: 0;
+    }
+
+    /* ── Screen preview ── */
+    .label {
+      width: 150mm;
+      height: 100mm;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      font-size: 8pt;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       HEADER — logo + product name
+    ═══════════════════════════════════════════════════ */
+    .info-header {
+      background: var(--color-primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2mm 4mm;
+      flex-shrink: 0;
+      direction: ltr;
+      height: 20mm;
+    }
+
+    .info-header-logo {
+      height: 13.5mm;
+      width: auto;
+      display: block;
+    }
+
+    .info-header-logo-fallback {
+      font-size: 27pt;
+      font-weight: 900;
+      letter-spacing: 3px;
+      color: #fff;
+    }
+
+    .info-header-title {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 1px;
+    }
+
+    .info-header-title .name-fa {
+      font-size: 10pt;
+      font-weight: 700;
+      font-family: 'Segoe UI', Tahoma,'B Nazanin', 'Vazir', sans-serif;
+      direction: rtl;
+    }
+
+    .info-header-title .name-en {
+      font-size: 8pt;
+      font-weight: 400;
+      opacity: 0.85;
+      letter-spacing: 0.5px;
+    }
+
+    .info-header-title .model-badge {
+      font-size: 6.5pt;
+      background: rgba(255,255,255,0.2);
+      padding: 1px 5px;
+      border-radius: 3px;
+      letter-spacing: 0.5px;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       BODY — two columns
+    ═══════════════════════════════════════════════════ */
+    .info-body {
+      flex: 1;
+      display: flex;
+      direction: ltr;
+      overflow: hidden;
+    }
+
+    /* ── Left column: identification + QR ── */
+    .info-col-left {
+      width: 55mm;
+      border-right: 0.5px solid #ddd;
+      display: flex;
+      flex-direction: column;
+      padding: 2mm 2.5mm;
+      gap: 2mm;
+    }
+
+    /* ── Right column: electrical + warnings ── */
+    .info-col-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 2mm 2.5mm;
+      gap: 2mm;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       Section headings
+    ═══════════════════════════════════════════════════ */
+    .section-title {
+      font-size: 6.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--color-primary);
+      border-bottom: 0.5px solid var(--color-primary);
+      padding-bottom: 1px;
+      margin-bottom: 1.5mm;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       Identification section
+    ═══════════════════════════════════════════════════ */
+    .id-grid {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1.5px 4px;
+      align-items: baseline;
+    }
+
+    .id-key {
+      font-size: 6.5pt;
+      color: var(--color-text-light);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .id-val {
+      font-size: 7pt;
+      font-weight: 700;
+      color: var(--color-text);
+      font-family: 'Courier New', monospace;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       QR section (bottom of left column)
+    ═══════════════════════════════════════════════════ */
+    .info-qr-wrap {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5px;
+    }
+
+    .info-qr-wrap img {
+      width: 22mm;
+      height: 22mm;
+      display: block;
+      image-rendering: pixelated;
+    }
+
+    .info-qr-caption {
+      font-size: 6pt;
+      text-align: center;
+      color: var(--color-text-light);
+      line-height: 1.3;
+    }
+
+    .info-qr-url {
+      font-size: 6pt;
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       Electrical specs
+    ═══════════════════════════════════════════════════ */
+    .elec-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5px 4mm;
+    }
+
+    .elec-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .elec-key {
+      font-size: 6pt;
+      color: var(--color-text-light);
+      font-weight: 600;
+    }
+
+    .elec-val {
+      font-size: 7.5pt;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+
+    /* ═══════════════════════════════════════════════════
+       Safety warnings
+    ═══════════════════════════════════════════════════ */
+    /* Warnings block: Persian, right-aligned (RTL) */
+    .warnings-intro {
+      font-size: 6.5pt;
+      line-height: 1.35;
+      color: var(--color-text);
+      direction: rtl;
+      text-align: right;
+      margin-bottom: 1.5mm;
+      font-family: 'Segoe UI', Tahoma,'B Nazanin', 'Vazir', sans-serif;
+    }
+
+    .warnings-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2mm;
+      direction: rtl;
+      text-align: right;
+    }
+
+    .warning-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 2mm;
+      /* icon left, text right; text has direction: rtl so Persian flows right-to-left */
+    }
+
+    .warning-item svg {
+      flex-shrink: 0;
+      width: 10px;
+      height: 10px;
+      margin-top: 1px;
+    }
+
+    .warning-item-text {
+      font-size: 6.5pt;
+      line-height: 1.35;
+      color: var(--color-text);
+      direction: rtl;
+      text-align: right;
+      font-family: 'Segoe UI', Tahoma,'B Nazanin', 'Vazir', sans-serif;
+    }
+
+    .warning-item-text strong {
+      color: var(--color-accent);
+      font-size: 6.5pt;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       FOOTER — brand + website
+    ═══════════════════════════════════════════════════ */
+    .info-footer {
+      background: #f5f5f5;
+      border-top: 0.5px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5mm 4mm;
+      flex-shrink: 0;
+      direction: ltr;
+      height: 7mm;
+    }
+
+    .info-footer-brand {
+      font-size: 7pt;
+      font-weight: 700;
+      color: var(--color-primary);
+      letter-spacing: 1px;
+    }
+
+    .info-footer-contact {
+      display: flex;
+      gap: 4mm;
+      align-items: center;
+    }
+
+    .info-footer-contact span {
+      font-size: 6.5pt;
+      color: var(--color-text-light);
+    }
+
+    .info-footer-contact .contact-val {
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    /* ── Warning triangle SVG inline ── */
+    .icon-warning-svg { color: var(--color-warning); }
+  </style>
+  <script src="label-config.js"></script>
+</head>
+<body>
+
+  <!-- Print button — hidden in print output -->
+  <div class="print-controls">
+    <button class="btn-print" onclick="window.print()">🖨 Print Info Label</button>
+  </div>
+
+  <div class="label-wrapper">
+    <div class="label">
+
+      <!-- ═══ HEADER ═══════════════════════════════════════════════════════════ -->
+      <div class="info-header">
+        <!-- Logo (left side in LTR layout) -->
+        <div>
+          <img id="logoImg" class="info-header-logo" src="assets/logo-rodi.png" alt="RODI"
+               onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='block';">
+          <span id="logoFallback" class="info-header-logo-fallback" style="display:none;">RODI</span>
+        </div>
+
+        <!-- Product name (right side) -->
+        <div class="info-header-title">
+          <span class="name-fa" id="hdrNameFa">تشک هوشمند</span>
+          <span class="name-en" id="hdrNameEn">Smart Mattress</span>
+          <span class="model-badge" id="hdrModel">V1.0</span>
+        </div>
+      </div>
+
+      <!-- ═══ BODY ══════════════════════════════════════════════════════════════ -->
+      <div class="info-body">
+
+        <!-- Left column: identification + QR -->
+        <div class="info-col-left">
+
+          <div>
+            <div class="section-title">Identification</div>
+            <div class="id-grid">
+              <span class="id-key">S/N</span>
+              <span class="id-val" id="idSN">—</span>
+
+              <span class="id-key">Batch</span>
+              <span class="id-val" id="idBatch">—</span>
+
+              <span class="id-key">Date</span>
+              <span class="id-val" id="idDate">—</span>
+
+              <span class="id-key">By</span>
+              <span class="id-val" id="idDesigner">—</span>
+            </div>
+          </div>
+
+          <!-- QR code -->
+          <div class="info-qr-wrap">
+            <img id="websiteQrImg" src="" alt="QR Code"
+                 onerror="this.style.display='none'; document.getElementById('qrFallback').style.display='flex';">
+            <!-- Fallback when QR image not found -->
+            <div id="qrFallback" style="display:none; width:22mm; height:22mm; border:1px dashed #aaa;
+                 align-items:center; justify-content:center;">
+              <span style="font-size:6pt; color:#aaa; text-align:center;">QR<br>rodiset.ir</span>
+            </div>
+            <div class="info-qr-caption">
+              راهنما و پشتیبانی<br>
+              <span class="info-qr-url" id="qrUrl">rodiset.ir</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right column: electrical + warnings -->
+        <div class="info-col-right">
+
+          <!-- Electrical specs -->
+          <div>
+            <div class="section-title">Electrical &amp; Connectivity</div>
+            <div class="elec-grid">
+              <div class="elec-item">
+                <span class="elec-key">Input Voltage</span>
+                <span class="elec-val" id="elecVoltage">— VAC</span>
+              </div>
+              <div class="elec-item">
+                <span class="elec-key">Frequency</span>
+                <span class="elec-val" id="elecFreq">— Hz</span>
+              </div>
+              <div class="elec-item">
+                <span class="elec-key">Power</span>
+                <span class="elec-val" id="elecPower">— W</span>
+              </div>
+              <div class="elec-item">
+                <span class="elec-key">Current</span>
+                <span class="elec-val" id="elecCurrent">— A</span>
+              </div>
+              <div class="elec-item">
+                <span class="elec-key">WiFi</span>
+                <span class="elec-val" id="elecWifi">—</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Safety warnings -->
+          <div>
+            <div class="section-title">Safety Warnings</div>
+            <p class="warnings-intro">
+              دستگاه مجهز به فیوز نشت جریان و محافظت اتصال کابل است. با این حال:
+            </p>
+            <div class="warnings-list">
+
+              <!-- Warning 1: moisture -->
+              <div class="warning-item">
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-warning-svg">
+                  <path d="M8 1L15 14H1L8 1Z" fill="#f5a623" stroke="#c47d00" stroke-width="0.8"/>
+                  <text x="8" y="11.5" text-anchor="middle" font-size="7" font-weight="bold" fill="#333">!</text>
+                </svg>
+                <div class="warning-item-text">
+                  دستگاه رو دور از رطوبت و مایعات نگه دارید.
+                </div>
+              </div>
+
+              <!-- Warning 2: cable protection -->
+              <div class="warning-item">
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-warning-svg">
+                  <path d="M8 1L15 14H1L8 1Z" fill="#f5a623" stroke="#c47d00" stroke-width="0.8"/>
+                  <text x="8" y="11.5" text-anchor="middle" font-size="7" font-weight="bold" fill="#333">!</text>
+                </svg>
+                <div class="warning-item-text">
+                  کابل دستگاه رو از پارگی و خراش محافظت کنید.
+                </div>
+              </div>
+
+              <!-- Warning 3: damage / contact support -->
+              <div class="warning-item">
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-warning-svg">
+                  <path d="M8 1L15 14H1L8 1Z" fill="#e94560" stroke="#a0001f" stroke-width="0.8"/>
+                  <text x="8" y="11.5" text-anchor="middle" font-size="7" font-weight="bold" fill="#fff">!</text>
+                </svg>
+                <div class="warning-item-text">
+                  در صورت شکستگی یا آسیب از دستگاه استفاده نکنید و با پشتیبانی تماس بگیرید.
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ═══ FOOTER ════════════════════════════════════════════════════════════ -->
+      <div class="info-footer">
+        <span class="info-footer-brand" id="footerBrand">RODI</span>
+        <div class="info-footer-contact">
+          <span>
+            <span>Website: </span>
+            <span class="contact-val" id="footerWebsite">rodiset.ir</span>
+          </span>
+          <span id="footerPhoneWrap" style="display:none;">
+            <span>Tel: </span>
+            <span class="contact-val" id="footerPhone"></span>
+          </span>
+          <span id="footerTelegramWrap" style="display:none;">
+            <span>Telegram: </span>
+            <span class="contact-val" id="footerTelegram"></span>
+          </span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Populate all dynamic fields from label-config.js --- runs after DOM is ready
+    (function () {
+      const cfg = LABEL_CONFIG;
+      const p   = cfg.product;
+      const u   = cfg.unit;
+      const e   = cfg.electrical;
+      const b   = cfg.brand;
+      const q   = cfg.qr;
+      const m   = cfg.meta;
+
+      // Helper: return value or placeholder dash
+      const val = (v, unit) => v ? (unit ? v + ' ' + unit : v) : '____';
+
+      // Header
+      document.getElementById('hdrNameFa').textContent  = p.name    || 'تشک هوشمند';
+      document.getElementById('hdrNameEn').textContent  = p.nameEn  || 'Smart Mattress';
+      document.getElementById('hdrModel').textContent   = p.version || '';
+
+      // Identification
+      document.getElementById('idSN').textContent       = val(u.serialNumber);
+      document.getElementById('idBatch').textContent    = val(u.batchLot);
+      document.getElementById('idDate').textContent     = val(u.productionDate);
+      document.getElementById('idDesigner').textContent = val(m.designedBy);
+
+      // QR image
+      const qrImg = document.getElementById('websiteQrImg');
+      if (q.websiteQrImage) {
+        qrImg.src = q.websiteQrImage;
+      } else {
+        qrImg.style.display = 'none';
+        document.getElementById('qrFallback').style.display = 'flex';
+      }
+      document.getElementById('qrUrl').textContent = b.website || 'rodiset.ir';
+
+      // Electrical
+      document.getElementById('elecVoltage').textContent = val(e.inputVoltage, 'VAC');
+      document.getElementById('elecFreq').textContent    = val(e.frequency, 'Hz');
+      document.getElementById('elecPower').textContent   = val(e.power, 'W');
+      document.getElementById('elecCurrent').textContent = val(e.current, 'A');
+      document.getElementById('elecWifi').textContent    = val(e.wifiFreq);
+
+      // Footer
+      document.getElementById('footerBrand').textContent   = b.name    || 'RODI';
+      document.getElementById('footerWebsite').textContent = b.website  || 'rodiset.ir';
+
+      if (b.supportPhone) {
+        document.getElementById('footerPhone').textContent   = b.supportPhone;
+        document.getElementById('footerPhoneWrap').style.display = 'inline';
+      }
+      if (b.supportTelegram) {
+        document.getElementById('footerTelegram').textContent   = b.supportTelegram;
+        document.getElementById('footerTelegramWrap').style.display = 'inline';
+      }
+    })();
+  </script>
+
+</body>
+</html>

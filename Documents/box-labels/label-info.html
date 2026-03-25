@@ -6,9 +6,9 @@
   <title>RODI — Product Information Label</title>
   <link rel="stylesheet" href="label-styles.css">
   <style>
-    /* Info label page size: 150mm × 100mm --- fits flat surface of box (190×160mm) */
+    /* Print on A4 with two labels centered --- each label is 150mm × 100mm */
     @page {
-      size: 150mm 100mm;
+      size: A4 portrait;
       margin: 0;
     }
 
@@ -22,6 +22,38 @@
       flex-direction: column;
       overflow: hidden;
       font-size: 8pt;
+    }
+
+    /* ── Two-up print layout: two labels centered on A4 ── */
+    @media print {
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      .print-controls {
+        display: none !important;
+      }
+
+      /* A4 = 210mm × 297mm; two labels (100mm each) + gap = 210mm total height, centered */
+      .label-wrapper {
+        width: 210mm;
+        min-height: 297mm;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10mm;
+        padding: 0;
+        background: none;
+      }
+
+      .label {
+        box-shadow: none;
+        border: none;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
     }
 
     /* ═══════════════════════════════════════════════════
@@ -302,11 +334,11 @@
 
   <!-- Print button — hidden in print output -->
   <div class="print-controls">
-    <button class="btn-print" onclick="window.print()">🖨 Print Info Label</button>
+    <button class="btn-print" onclick="window.print()">🖨 Print 2× on A4</button>
   </div>
 
   <div class="label-wrapper">
-    <div class="label">
+    <div class="label" id="label-1">
 
       <!-- ═══ HEADER ═══════════════════════════════════════════════════════════ -->
       <div class="info-header">
@@ -462,6 +494,10 @@
       </div>
 
     </div>
+
+    <!-- Second copy of the label for 2-up A4 print --- cloned by JS from label-1 -->
+    <div id="label-2"></div>
+
   </div>
 
   <script>
@@ -518,6 +554,13 @@
         document.getElementById('footerTelegram').textContent   = b.supportTelegram;
         document.getElementById('footerTelegramWrap').style.display = 'inline';
       }
+
+      // Clone label-1 into label-2 for 2-up A4 print --- deep clone preserves all content
+      const original = document.getElementById('label-1');
+      const clone    = original.cloneNode(true);
+      clone.id       = 'label-2-inner';
+      clone.removeAttribute('id');
+      document.getElementById('label-2').appendChild(clone);
     })();
   </script>
 
